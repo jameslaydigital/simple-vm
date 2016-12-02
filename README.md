@@ -27,11 +27,13 @@ pointer BP, and an instruction pointer IP.
 REGISTERS:
 
 
-R1-R8 | general purpose registers
-------+---------------------------
-SP    | stack pointer
-BP    | base pointer
-IP    | instruction pointer
+| Register   | Function                   |
+| -----------| -------------------------- |
+| R1-R8      | general purpose registers  |
+| SP         | stack pointer              |
+| BP         | base pointer               |
+| IP         | instruction pointer        |
+| CMP        | comparison register        |
 
 
 Operations are 32 bit integers and operands are 32 bit integers. Every
