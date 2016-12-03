@@ -1,3 +1,3 @@
-#!/usr/local/bin/bash
+#!/usr/bin/bash
 
-g++ -o ./bin/vm ./vm.cpp && ./bin/vm ./source.bc
+g++ -std=gnu++11 -o ./bin/vm ./vm.cpp && ./bin/vm ./source.bc
