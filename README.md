@@ -32,6 +32,7 @@ REGISTERS:
 | R1-R8      | general purpose registers  |
 | SP         | stack pointer              |
 | BP         | base pointer               |
+| OP         | offset pointer             |
 | IP         | instruction pointer        |
 | CMP        | comparison register        |
 
@@ -42,3 +43,28 @@ each instruction, the IP will auto-increment by 8 bytes (64 bits). If you think
 this is wasteful, go fuck yourself...  
 
 
+LOAD INSTRUCTIONS AND ADDRESSING
+================================
+
+I had to take some liberties in order to make this whole "one operand per opcode" thing work.
+Ultimately, it could also be thought of that each instruction is 64 bits long
+and contains an operation of 1-2 bytes and the rest could be any number of
+operands. Which ever way you prefer to think of it is fine; that's the beauty
+of it.  
+
+MEMORY: HEAP AND STACK
+======================
+
+Soooo, the head and stack are seperate in this architecture.
+I made this decision to increase the simplicity of the design and to mitigate
+stack overflows. It is because of this, however, that you need seperate
+instructions for accessing each. No big deal, just a couple more instructions.
+I said it was simple, not that it was RISC.  
+By the way, code lives on the heap, so heap access can self-modify code.  
+
+PERFORMANCE
+===========
+
+Each opcode is mapped to a function. There's a number of ways to achieve this
+internally, via a linked-list (ew), a hashmap (eh), or an actual offset of an
+array (yea!). I chose the last.

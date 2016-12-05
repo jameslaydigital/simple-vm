@@ -4,71 +4,58 @@ import sys
 
 _CMD_SIZE = 8
 opcodes = {
-    "loadR1const" : 0x00,
-    "loadR2const" : 0x01,
-    "loadR3const" : 0x02,
-    "loadR4const" : 0x03,
-    "loadR5const" : 0x04,
-    "loadR6const" : 0x05,
-    "loadR7const" : 0x06,
-    "loadR8const" : 0x07,
-    "loadR1mem"   : 0x08,
-    "loadR2mem"   : 0x09,
-    "loadR3mem"   : 0x0a,
-    "loadR4mem"   : 0x0b,
-    "loadR5mem"   : 0x0c,
-    "loadR6mem"   : 0x0d,
-    "loadR7mem"   : 0x0e,
-    "loadR8mem"   : 0x0f,
-    "syscall"     : 0x10,
-    "push"        : 0x11,
-    "pop"         : 0x12,
-    "addR1reg"    : 0x13,
-    "addR1const"  : 0x14,
-    "subR1reg"    : 0x15,
-    "subR1const"  : 0x16,
-    "multR1reg"   : 0x17,
-    "multR1const" : 0x18,
-    "divR1reg"    : 0x19,
-    "divR1const"  : 0x1A,
-    "cmpRegs"     : 0x1B,
-    "jump"        : 0x1B
+    "debugOp"           : bytearray([chr(0),chr(0),chr(0),chr(0)]),
+    "movRegReg"         : bytearray([chr(0),chr(1),chr(0),chr(0)]),
+    "movRegIndReg"      : bytearray([chr(0),chr(2),chr(0),chr(0)]),
+    "movRegConst"       : bytearray([chr(0),chr(3),chr(0),chr(0)]),
+    "movRegBaseOffset"  : bytearray([chr(0),chr(4),chr(0),chr(0)])
 }
 
 symbols = {
-#registers:
-    "R1" : 0,
-    "R2" : 1,
-    "R3" : 2,
-    "R4" : 3,
-    "R5" : 4,
-    "R6" : 5,
-    "R7" : 6,
-    "R8" : 7,
+#register indexes:
+    "R0" : chr(0),
+    "R1" : chr(1),
+    "R2" : chr(2),
+    "R3" : chr(3),
+    "R4" : chr(4),
+    "R5" : chr(5),
+    "R6" : chr(6),
+    "R7" : chr(7),
+    "R8" : chr(8),
+    "R9" : chr(9),
+    "BP" : chr(10),
 #syscalls:
-    "sys_dump" : 0
+    "sys_dump" : chr(0)
 }
 
 def err(arg):
+    sys.stderr.write("FATAL ERROR: ")
     sys.stderr.write(arg+"\n")
     exit(1)
 
 def convert(tkns, i):
-    op = tkns[0]
-    arg = tkns[1]
+    if len(tkns) < 4:
+        err("Not enough tokens on line "+str(i)+": ["+','.join(tkns)+"]");
+    op  = tkns[0]
     if op == "label:":
-        symbols[arg] = i * _CMD_SIZE #TODO: this will cause problems
+        symbols[arg] = i*_CMD_SIZE
         return []
     else:
         opcode = opcodes[op]
-    operand = symbols[arg] if arg in symbols else int(arg)
-    instructions = [opcode, operand]
-    print "%s(%s) %s(%s)" % (opcode, op, operand, arg)
+    opA = toBytes16(int(tkns[1]))
+    opB = toBytes16(int(tkns[2]))
+    opC = toBytes16(int(tkns[3]))
+    #operand = symbols[arg] if arg in symbols else int(arg)
+    instructions = opcode+opA+opB+opC
     return instructions 
 
 def toBytes(num):
+bytearray([chr(int(tkns[1])),chr(0)]);
     try:
-        return bytearray([0,0,0,num])
+        if num > 127:
+            return bytearray([num,0])
+        else:
+            return bytearray([num])
     except Exception as e:
         print "%s: number %s" % (e,num)
         raise Exception("fail")
@@ -78,10 +65,10 @@ def readLoop():
     byteCode = bytearray()
     for text in sys.stdin.readlines():
         tkns = text.strip().split(";")[0].strip().split()
-        instructions = convert(tkns, i)
-        if len(instructions) > 0:
-            byteCode += toBytes(instructions[0])
-            byteCode += toBytes(instructions[1])
+        if len(tkns) != 0:
+            instructions = convert(tkns, i)
+            if len(instructions) > 0:
+                byteCode += instructions
         i += 1
     return byteCode
 

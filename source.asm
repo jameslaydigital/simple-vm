@@ -1,7 +1,9 @@
-loadR2const 5
-loadR1const 0
-addR1reg R2
-addR1reg R2
-label: somewhere
-syscall sys_dump
-jump somewhere
+;    _fmap[0x00] = &debugOp;
+;    _fmap[0x01] = &movRegReg;
+;    _fmap[0x02] = &movRegIndReg;
+;    _fmap[0x03] = &movRegConst;
+;    _fmap[0x04] = &movRegBaseOffset;
+debugOp 0 0 0
+debugOp 8 2 1
+movRegConst 0 5 0
+movRegReg 1 0 0
