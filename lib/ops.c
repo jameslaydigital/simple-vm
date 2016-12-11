@@ -2,9 +2,7 @@ char fnote[23] = {'R','e','g','i','s','t','e','r',' ','i','n','d','e','x',' ','f
 
 //==DEBUGGING===========================//
 void debugOp(unsigned short A,unsigned short B,unsigned short C) {
-    unsigned int i = toUInt32(B,C);
-    //printf("debugOp(%u, %u, %u);\n", A, B, C);
-    printf("debugOp(%#1x, %#1x);\n", A, i);
+    printf("debugOp(%#1x, %#1x, %#1x);\n", A, B, C);
     return;
 }
 
@@ -43,11 +41,14 @@ void movRegIndReg(unsigned short rA,unsigned short rB,unsigned short NA) {
 
 
 void pushReg(unsigned short r,unsigned short NA,unsigned short NB) {
+    printf("RUNNING PUSH: %#1x %#1x %#1x\n", r, NA, NB);
     if ( r < MAX_REG_INDEX ) {
         _regs[SP] -= SIZE_32;
         unsigned int base = _regs[SP];
         unsigned int num = _regs[r];
         uIntToBytes(num,_buff+base);
+        //printf("\tmemory size     %lu\n", _buff_size); //debug
+        //printf("\tpushed register %#1x to %u.\n", r, _regs[SP]); //debug
     } else printf("ERR: pushReg: %s: %#1x.\n",fnote,r);
 }
 void pushConst(unsigned short NA,unsigned short LSB,unsigned short MSB) {
@@ -65,6 +66,9 @@ void popReg(unsigned short r,unsigned short NA,unsigned short NB) {
 
 void jump(unsigned short NA,unsigned short LSB,unsigned short MSB) {
     int loc = toUInt32(LSB, MSB);
+    if ( loc % INSTRUCTION_BYTE_SIZE != 0 ) {
+        printf("WARN: jumping to middle of instruction (byte %#1x). Prepare for confusing shit.", loc);
+    }
     _regs[IP] = loc-INSTRUCTION_BYTE_SIZE;
 }
 void jumpE(unsigned short NA,unsigned short LSB,unsigned short MSB) {
@@ -91,283 +95,124 @@ int cmp_util(unsigned int A, unsigned int B) {
     return CMP_G;
 }
 void cmpRegReg(unsigned short rA,unsigned short rB,unsigned short NA) {
-    _regs[CMP] = cmp_util(_regs[rA],_regs[rB]);
+    _regs[CMP] = 0;
+    unsigned int numA = toUInt32(_regs[rA], (unsigned short)0);
+    unsigned int numB = toUInt32(_regs[rB], (unsigned short)0);
+    _regs[CMP] = cmp_util(numA, numB);
 }
 void cmpRegConst(unsigned short rA,unsigned short lsb,unsigned short msb) {
-    _regs[CMP] = cmp_util(_regs[rA],toUInt32(lsb,msb));
+    _regs[CMP] = 0;
+    unsigned int numA = toUInt32(_regs[rA], (unsigned short)0);
+    _regs[CMP] = cmp_util(numA, toUInt32(lsb,msb));
 }
 
-//void movReg(unsigned short reg, unsigned short off, int constant) {
-//    //loads register A immediate constant
-//    if ( checkRegIndex(reg) ) {
-//        _regs[regA] = constant+off;
-//    }
-//}
-//
-//void movRegStackD(short reg, short offset, int loc) {
-//}
-//
-//void loadR1const(int operand) {
-//    printf("loadR1const %d\n", operand);
-//    _regs[R1] = operand;
-//}
-//void loadR2const(int operand) {
-//    printf("loadR2const %d\n", operand);
-//    _regs[R2] = operand;
-//}
-//void loadR3const(int operand) {
-//    printf("loadR3const %d\n", operand);
-//    _regs[R3] = operand;
-//}
-//void loadR4const(int operand) {
-//    printf("loadR4const %d\n", operand);
-//    _regs[R4] = operand;
-//}
-//void loadR5const(int operand) {
-//    printf("loadR5const %d\n", operand);
-//    _regs[R5] = operand;
-//}
-//void loadR6const(int operand) {
-//    printf("loadR6const %d\n", operand);
-//    _regs[R6] = operand;
-//}
-//void loadR7const(int operand) {
-//    printf("loadR7const %d\n", operand);
-//    _regs[R7] = operand;
-//}
-//void loadR8const(int operand) {
-//    printf("loadR8const %d\n", operand);
-//    _regs[R8] = operand;
-//}
-//
-//
-////==LOAD=(register)=====================//
-//void loadR1mem(int loc) {
-//    try {
-//        _regs[R1] = _buff.at(_r);
-//        printf("loadR1mem [%d] (%d)\n", loc, _regs[R1]);
-//    } catch(...) {
-//        printf("Heap access fault. No memory available at index %d\n", loc);
-//    }
-//}
-//void loadR2mem(int loc) {
-//    try {
-//        _regs[R2] = _buff.at(_);
-//        printf("loadR2mem [%d] (%d)\n", loc, _regs[R2]);
-//    } catch(...) {
-//        printf("Heap access fault. No memory available at index %d\n", loc);
-//    }
-//}
-//void loadR3mem(int loc) {
-//    try {
-//        _regs[R3] = _buff.at(_);
-//        printf("loadR3mem [%d] (%d)\n", loc, _regs[R3]);
-//    } catch(...) {
-//        printf("Heap access fault. No memory available at index %d\n", loc);
-//    }
-//}
-//void loadR4mem(int loc) {
-//    try {
-//        _regs[R4] = _buff.at(_);
-//        printf("loadR4mem [%d] (%d)\n", loc, _regs[R4]);
-//    } catch(...) {
-//        printf("Heap access fault. No memory available at index %d\n", loc);
-//    }
-//}
-//void loadR5mem(int loc) {
-//    try {
-//        _regs[R5] = _buff.at(_);
-//        printf("loadR5mem [%d] (%d)\n", loc, _regs[R5]);
-//    } catch(...) {
-//
-//        printf("Heap access fault. No memory available at index %d\n", loc);
-//    }
-//}
-//void loadR6mem(int loc) {
-//    try {
-//        _regs[R6] = _buff.at(_);
-//        printf("loadR6mem [%d] (%d)\n", loc, _regs[R6]);
-//    } catch(...) {
-//        printf("Heap access fault. No memory available at index %d\n", loc);
-//    }
-//}
-//void loadR7mem(int loc) {
-//    try {
-//        _regs[R7] = _buff.at(_);
-//        printf("loadR7mem [%d] (%d)\n", loc, _regs[R7]);
-//    } catch(...) {
-//        printf("Heap access fault. No memory available at index %d\n", loc);
-//    }
-//}
-//void loadR8mem(int loc) {
-//    try {
-//        _regs[R8] = _buff.at(_r);
-//        printf("loadR8mem [%d] (%d)\n", loc, _regs[R8]);
-//    } catch(...) {
-//        printf("Heap access fault. No memory available at index %d\n", loc);
-//    }
-//}
-//
-//inline bool checkRegIndex(int reg_index) {
-//    if ( reg_index > MAX_REG_INDEX || reg_index < 0 ) {
-//        printf("Register index %d invalid.\n", reg_index);
-//        return false;
-//    }
-//    return true;
-//}
-//
-//inline bool checkStackIndex(int index) {
-//    int sz = _buff.size();
-//    if ( index > sz ) {
-//        printf("Stack index %d is not within buff of size %d.\n",index,sz);
-//        return false;
-//    }
-//    return true;
-//}
-//
-//void loadR1reg(int reg_index) {
-//    if ( checkRegIndex(reg_index) ) {
-//        _regs[R1] = _buff.at(reg_index);
-//    }
-//}
-//void loadR2reg(int reg_index) {
-//    if ( checkRegIndex(reg_index) ) {
-//        _regs[R2] = _buff.at(reg_index);
-//    }
-//}
-//void loadR3reg(int reg_index) {
-//    if ( checkRegIndex(reg_index) ) {
-//        _regs[R3] = _buff.at(reg_index);
-//    }
-//}
-//void loadR4reg(int reg_index) {
-//    if ( checkRegIndex(reg_index) ) {
-//        _regs[R4] = _buff.at(reg_index);
-//    }
-//}
-//void loadR5reg(int reg_index) {
-//    if ( checkRegIndex(reg_index) ) {
-//        _regs[R5] = _buff.at(reg_index);
-//    }
-//}
-//void loadR6reg(int reg_index) {
-//    if ( checkRegIndex(reg_index) ) {
-//        _regs[R6] = _buff.at(reg_index);
-//    }
-//}
-//void loadR7reg(int reg_index) {
-//    if ( checkRegIndex(reg_index) ) {
-//        _regs[R7] = _buff.at(reg_index);
-//    }
-//}
-//void loadR8reg(int reg_index) {
-//    if ( checkRegIndex(reg_index) ) {
-//        _regs[R8] = _buff.at(reg_index);
-//    }
-//}
-//
-////loads offset of base pointer
-//
-//
-//
-////==PUSH================================//
-//void push(int reg_index) {
-//    _regs[SP] += SIZE_32;
-//    if ( checkStackIndex(_regs[SP]) )
-//        printf("warning: cannot push beyong stack limit.\n");
-//    _stack[_regs[SP]] = _regs[reg_index];
-//}
-//
-////==ADD=================================//
-//void addR1reg(int reg_index) {
-//    if ( reg_index > MAX_REG_INDEX || reg_index < 0 ) {
-//        printf("error: trying to add to non-existent register: R%d\n", reg_index);
-//    }
-//    _regs[R1] = _regs[R1]+_regs[reg_index];
-//}
-//void addR1const(int constant) {
-//    _regs[R1] = _regs[R1]+constant;
-//}
-//
-////==SUB=================================//
-//void subR1reg(int reg_index) {
-//    if ( reg_index > MAX_REG_INDEX || reg_index < 0 ) {
-//        printf("error: trying to subtract from non-existent register: R%d\n", reg_index);
-//    }
-//    _regs[R1] = _regs[R1]-_regs[reg_index];
-//}
-//void subR1const(int constant) {
-//    _regs[R1] = _regs[R1]-constant;
-//}
-//
-////==MULT================================//
-//void multR1reg(int reg_index) {
-//    if ( reg_index > MAX_REG_INDEX || reg_index < 0 ) {
-//        printf("error: trying to multiply by non-existent register: R%d\n", reg_index);
-//    }
-//    _regs[R1] = _regs[R1]*_regs[reg_index];
-//}
-//void multR1const(int constant) {
-//    _regs[R1] = _regs[R1]*constant;
-//}
-//
-////==DIV=================================//
-//void divR1reg(int reg_index) {
-//    if ( reg_index > MAX_REG_INDEX || reg_index < 0 ) {
-//        printf("error: trying to divide by non-existent register: R%d\n", reg_index);
-//    }
-//    _regs[R1] = _regs[R1]/_regs[reg_index];
-//}
-//void divR1const(int constant) {
-//    _regs[R1] = _regs[R1]/constant;
-//}
-//
-////==SYSCALL=============================//
-//
-//void cmpRegs(int reg_index) {
-//    //TODO
-//}
-//
-//void jump(int condition) {
-//    //jump to register location. You always jump to the location in R1. The
-//    //operand is a number from 0-7 that indicates the jump requirement.
-//    //condition == 0: jump unconditionally
-//    //condition == 1: jump if equal
-//    //condition == 2: jump if not equal
-//    //condition == 3: jump if less than
-//    //condition == 4: jump if less than or equal
-//    //condition == 5: jump if greather than
-//    //condition == 6: jump if greater than or equal
-//    //condition == 7: undefined
-//    switch(condition) {
-//        case 0:
-//            _regs[IP] = _regs[R1] - 1; //bc execution will increment IP after this op
-//            break;
-//        case 1:
-//            if ( _regs[CMP] == CMP_EQ )
-//                _regs[IP] = _regs[R1] - 1; //bc execution will increment IP after this op
-//            break;
-//        case 2:
-//            if ( _regs[CMP] == CMP_NE )
-//                _regs[IP] = _regs[R1] - 1; //bc execution will increment IP after this op
-//            break;
-//        case 3:
-//            if ( _regs[CMP] == CMP_L )
-//            _regs[IP] = _regs[R1] - 1; //bc execution will increment IP after this op
-//            break;
-//        case 4:
-//            if ( _regs[CMP] == CMP_LE )
-//            _regs[IP] = _regs[R1] - 1; //bc execution will increment IP after this op
-//            break;
-//        case 5:
-//            if ( _regs[CMP] == CMP_G )
-//            _regs[IP] = _regs[R1] - 1; //bc execution will increment IP after this op
-//            break;
-//        case 6:
-//            if ( _regs[CMP] == CMP_GE )
-//            _regs[IP] = _regs[R1] - 1; //bc execution will increment IP after this op
-//            break;
-//        default:
-//            printf("warning: jump condition operand '%d' undefined. Ignoring.\n", condition);
-//    }
-//}
+//==XOR=========================//
+
+void xorRegReg(unsigned short rA, unsigned short rB, unsigned short NA) {
+    if ( rA < MAX_REG_INDEX && rB < MAX_REG_INDEX ) {
+        _regs[rA] = _regs[rA] ^ _regs[rB];
+    } else printf("ERR: xorRegreg: %s: %#1x %#1x.\n",fnote,rA,rB);
+}
+
+void xorRegConst(unsigned short r, unsigned short LSB, unsigned short MSB) {
+    if ( r < MAX_REG_INDEX ) {
+        unsigned int val = toUInt32(LSB,MSB);
+        _regs[r] = _regs[r] ^ val;
+    } else printf("ERR: xorRegreg: %s: %#1x.\n",fnote,r);
+}
+
+//==SHIFT=======================//
+void lshiftRegReg(unsigned short rA,unsigned short rB,unsigned short NA) {
+    if ( rA < MAX_REG_INDEX && rB < MAX_REG_INDEX ) {
+        _regs[rA] = _regs[rA] << _regs[rB];
+    } else printf("ERR: lshiftRegReg: %s: %#1x %#1x.\n",fnote,rA,rB);
+}
+void rshiftRegReg(unsigned short rA,unsigned short rB,unsigned short NA) {
+    if ( rA < MAX_REG_INDEX && rB < MAX_REG_INDEX ) {
+        _regs[rA] = _regs[rA] >> _regs[rB];
+    } else printf("ERR: rshiftRegReg: %s: %#1x %#1x.\n",fnote,rA,rB);
+}
+void lshiftRegConst(unsigned short r,unsigned short LSB,unsigned short MSB) {
+    if ( r < MAX_REG_INDEX ) {
+        unsigned int val = toUInt32(LSB,MSB);
+        _regs[r] = _regs[r] << val;
+    } else printf("ERR: lshiftRegConst: %s: %#1x.\n",fnote,r);
+}
+void rshiftRegConst(unsigned short r,unsigned short LSB,unsigned short MSB) {
+    if ( r < MAX_REG_INDEX ) {
+        unsigned int val = toUInt32(LSB,MSB);
+        _regs[r] = _regs[r] >> val;
+    } else printf("ERR: rshiftRegConst: %s: %#1x.\n",fnote,r);
+}
+
+//==AND=========================//
+void andRegReg(unsigned short rA,unsigned short rB,unsigned short NA) {
+    if ( rA < MAX_REG_INDEX && rB < MAX_REG_INDEX ) {
+        _regs[rA] = _regs[rA] & _regs[rB];
+    } else printf("ERR: andRegReg: %s: %#1x %#1x.\n",fnote,rA,rB);
+}
+void andRegConst(unsigned short r,unsigned short LSB,unsigned short MSB) {
+    if ( r < MAX_REG_INDEX ) {
+        unsigned int val = toUInt32(LSB,MSB);
+        _regs[r] = _regs[r] & val;
+    } else printf("ERR: andRegConst: %s: %#1x.\n",fnote,r);
+}
+
+//==NOT=========================//
+void notReg(unsigned short r,unsigned short NA,unsigned short NB) {
+    if ( r < MAX_REG_INDEX ) {
+        _regs[r] = ~_regs[r];
+    } else printf("ERR: notReg: %s: %#1x.\n",fnote,r);
+}
+
+//==ADD=========================//
+void addRegReg(unsigned short rA,unsigned short rB,unsigned short NA) {
+    if ( rA < MAX_REG_INDEX && rB < MAX_REG_INDEX ) {
+        _regs[rA] = _regs[rA] + _regs[rB];
+    } else printf("ERR: addRegReg: %s: %#1x %#1x.\n",fnote,rA,rB);
+}
+void addRegConst(unsigned short r,unsigned short LSB,unsigned short MSB) {
+    if ( r < MAX_REG_INDEX ) {
+        unsigned int val = toUInt32(LSB,MSB);
+        _regs[r] = _regs[r] + val;
+    } else printf("ERR: addRegConst: %s: %#1x.\n",fnote,r);
+}
+
+//==SUB=========================//
+void subRegReg(unsigned short rA,unsigned short rB,unsigned short NA) {
+    if ( rA < MAX_REG_INDEX && rB < MAX_REG_INDEX ) {
+        _regs[rA] = _regs[rA] - _regs[rB];
+    } else printf("ERR: subRegReg: %s: %#1x %#1x.\n",fnote,rA,rB);
+}
+void subRegConst(unsigned short r,unsigned short LSB,unsigned short MSB) {
+    if ( r < MAX_REG_INDEX ) {
+        unsigned int val = toUInt32(LSB,MSB);
+        _regs[r] = _regs[r] - val;
+    } else printf("ERR: subRegConst: %s: %#1x.\n",fnote,r);
+}
+
+//==MULT========================//
+void multRegReg(unsigned short rA,unsigned short rB,unsigned short NA) {
+    if ( rA < MAX_REG_INDEX && rB < MAX_REG_INDEX ) {
+        _regs[rA] = _regs[rA] * _regs[rB];
+    } else printf("ERR: multRegReg: %s: %#1x %#1x.\n",fnote,rA,rB);
+}
+void multRegConst(unsigned short r,unsigned short LSB,unsigned short MSB) {
+    if ( r < MAX_REG_INDEX ) {
+        unsigned int val = toUInt32(LSB,MSB);
+        _regs[r] = _regs[r] * val;
+    } else printf("ERR: multRegConst: %s: %#1x.\n",fnote,r);
+}
+
+//==DIV=========================//
+void divRegReg(unsigned short rA,unsigned short rB,unsigned short NA) {
+    if ( rA < MAX_REG_INDEX && rB < MAX_REG_INDEX ) {
+        _regs[rA] = _regs[rA] / _regs[rB];
+    } else printf("ERR: divRegReg: %s: %#1x %#1x.\n",fnote,rA,rB);
+}
+void divRegConst(unsigned short r,unsigned short LSB,unsigned short MSB) {
+    if ( r < MAX_REG_INDEX ) {
+        unsigned int val = toUInt32(LSB,MSB);
+        _regs[r] = _regs[r] / val;
+    } else printf("ERR: divRegConst: %s: %#1x.\n",fnote,r);
+}

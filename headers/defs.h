@@ -32,9 +32,9 @@ typedef enum Error Err;
 #define R9 9
 #define BP 10    //Base pointer is another general use register. More for naming convenience.
 //specialized:
-#define SP 11    //stack pointer
-#define IP 12    //instruction pointer or program counter
-#define CMP 12  //comparison register
+#define SP 11   //stack pointer
+#define IP 12   //instruction pointer or program counter
+#define CMP 13  //comparison register
 #define MAX_REG_INDEX 11
 #define NUM_REGS 14 //used to initialize _regs[]
 //REGISTERS DONE
@@ -52,6 +52,7 @@ sysc _syscalls[0xff];
 
 unsigned char *_buff;
 long _buff_size = 0;
+long _stack_size = 1024;
 
 int _regs[NUM_REGS];
 int loadBuffer(char*);
