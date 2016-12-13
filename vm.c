@@ -27,57 +27,58 @@ void loadSysCalls() {
     //general-purpose registers.
     _syscalls[0x00] = &sys_dump;
     _syscalls[0x01] = &sys_exit;
+    _syscalls[0x02] = &sys_print;
 }
 
 void loadFunctionTable() {
 
 //==MOV=========================//
-    _fmap[0x00] = &debugOp;             //works
-    _fmap[0x01] = &movRegConst;         //works
-    _fmap[0x02] = &movRegIndConst;      //works
-    _fmap[0x03] = &movRegReg;           //works
-    _fmap[0x04] = &movRegIndReg;        //works
+    _fmap[0x00] = &debugOp;             //PASS
+    _fmap[0x01] = &movRegConst;         //PASS
+    _fmap[0x02] = &movRegIndConst;      //PASS
+    _fmap[0x03] = &movRegReg;           //PASS
+    _fmap[0x04] = &movRegIndReg;        //PASS
 //==JUMP========================//
-    _fmap[0x05] = &jump;                //works
-    _fmap[0x06] = &jumpE;               //works
-    _fmap[0x07] = &jumpNE;              //works
-    _fmap[0x08] = &jumpLT;              //works
-    _fmap[0x09] = &jumpGT;              //works
+    _fmap[0x05] = &jump;                //PASS
+    _fmap[0x06] = &jumpE;               //PASS
+    _fmap[0x07] = &jumpNE;              //PASS
+    _fmap[0x08] = &jumpLT;              //PASS
+    _fmap[0x09] = &jumpGT;              //PASS
 //==CMP=========================//
-    _fmap[0x0b] = &cmpRegReg;           //works
-    _fmap[0x0c] = &cmpRegConst;         //works
+    _fmap[0x0b] = &cmpRegReg;           //PASS
+    _fmap[0x0c] = &cmpRegConst;         //PASS
 //==PUSH========================//
-    _fmap[0x0d] = &pushReg;             //works
-    _fmap[0x0e] = &pushConst;           //works
+    _fmap[0x0d] = &pushReg;             //PASS
+    _fmap[0x0e] = &pushConst;           //PASS
 //==POP=========================//
-    _fmap[0x0f] = &popReg;              //works
+    _fmap[0x0f] = &popReg;              //PASS
 //==SYSCALL=====================//
-    _fmap[0x10] = &syscallOp;           //works
+    _fmap[0x10] = &syscallOp;           //PASS
 //==XOR=========================//
-    _fmap[0x11] = &xorRegReg;           //testing...
-    _fmap[0x12] = &xorRegConst;         //testing...
+    _fmap[0x11] = &xorRegReg;           //PASS
+    _fmap[0x12] = &xorRegConst;         //PASS
 //==SHIFT=======================//
-    _fmap[0x13] = &lshiftRegReg;        //IMPL
-    _fmap[0x14] = &rshiftRegReg;        //IMPL
-    _fmap[0x15] = &lshiftRegConst;      //IMPL
-    _fmap[0x16] = &rshiftRegConst;      //IMPL
+    _fmap[0x13] = &lshiftRegReg;        //PASS
+    _fmap[0x14] = &rshiftRegReg;        //PASS
+    _fmap[0x15] = &lshiftRegConst;      //PASS
+    _fmap[0x16] = &rshiftRegConst;      //PASS
 //==AND=========================//
-    _fmap[0x17] = &andRegReg;           //IMPL
-    _fmap[0x18] = &andRegConst;         //IMPL
+    _fmap[0x17] = &andRegReg;           //PASS
+    _fmap[0x18] = &andRegConst;         //PASS
 //==NOT=========================//
-    _fmap[0x19] = &notReg;              //IMPL
+    _fmap[0x19] = &notReg;              //PASS
 //==ADD=========================//
-    _fmap[0x1a] = &addRegReg;           //IMPL
-    _fmap[0x1b] = &addRegConst;         //IMPL
+    _fmap[0x1a] = &addRegReg;           //PASS
+    _fmap[0x1b] = &addRegConst;         //PASS
 //==SUB=========================//
-    _fmap[0x1c] = &subRegReg;           //IMPL
-    _fmap[0x1d] = &subRegConst;         //IMPL
+    _fmap[0x1c] = &subRegReg;           //PASS
+    _fmap[0x1d] = &subRegConst;         //PASS
 //==MULT========================//
-    _fmap[0x1e] = &multRegReg;          //IMPL
-    _fmap[0x1f] = &multRegConst;        //IMPL
+    _fmap[0x1e] = &multRegReg;          //PASS
+    _fmap[0x1f] = &multRegConst;        //PASS
 //==DIV=========================//
-    _fmap[0x20] = &divRegReg;           //IMPL
-    _fmap[0x21] = &divRegConst;         //IMPL
+    _fmap[0x20] = &divRegReg;           //PASS
+    _fmap[0x21] = &divRegConst;         //PASS
 }
 
 int executionLoop() {

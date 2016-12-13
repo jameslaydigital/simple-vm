@@ -19,3 +19,7 @@ void sys_dump(void) {
 void sys_exit(void) {
     exit(0);
 }
+
+void sys_print(void) {
+    printf("\nPRINT\n");
+}

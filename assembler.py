@@ -1,78 +1,62 @@
 #!/usr/bin/python
+symbols = { "debugOp":"0000",
+    "movRegConst"     : "0100",
+    "movRegIndConst"  : "0200",
+    "movRegReg"       : "0300",
+    "movRegIndReg"    : "0400",
+    "jump"            : "0500",
+    "jumpE"           : "0600",
+    "jumpNE"          : "0700",
+    "jumpLT"          : "0800",
+    "jumpGT"          : "0900",
+    "cmpRegReg"       : "0b00",
+    "cmpRegConst"     : "0c00",
+    "pushReg"         : "0d00",
+    "pushConst"       : "0e00",
+    "popReg"          : "0f00",
+    "syscallOp"       : "1000",
+    "xorRegReg"       : "1100",
+    "xorRegConst"     : "1200",
+    "lshiftRegReg"    : "1300",
+    "rshiftRegReg"    : "1400",
+    "lshiftRegConst"  : "1500",
+    "rshiftRegConst"  : "1600",
+    "andRegReg"       : "1700",
+    "andRegConst"     : "1800",
+    "notReg"          : "1900",
+    "addRegReg"       : "1a00",
+    "addRegConst"     : "1b00",
+    "subRegReg"       : "1c00",
+    "subRegConst"     : "1d00",
+    "multRegReg"      : "1e00",
+    "multRegConst"    : "1f00",
+    "divRegReg"       : "2000",
+    "divRegConst"     : "2100",
+    "syscall"         : "1000",
+    "sys_dump"  : "0000",
+    "sys_exit"  : "0100",
+    "sys_print" : "0200",
+    "R0" : "0000",
+    "R1" : "0100",
+    "R2" : "0200",
+    "R3" : "0300",
+    "R4" : "0400",
+    "R5" : "0500",
+    "R6" : "0600",
+    "R7" : "0700",
+    "R8" : "0800",
+    "R9" : "0900",
+    "R10": "0a00",
+    "BP" : "0a00" }
+data = open("source.asm").readlines()
+for i in range(len(data)):
+    for token in symbols:
+        data[i] = data[i].replace(token, symbols[token])
+    data[i] = data[i].replace(' ', '')
+    data[i] = data[i].replace('\n', '')
+    zeroPad = '0'*(16-len(data[i]))
+    data[i] = data[i]+zeroPad #zero-pad
+    data[i] = " ".join([data[i][0:4], data[i][4:8], data[i][8:12], data[i][12:]])
+    data[i] = hex(i*8)+": "+data[i]
 
-import sys
-
-_CMD_SIZE = 8
-opcodes = {
-    "debugOp"           : bytearray([chr(0),chr(0),chr(0),chr(0)]),
-    "movRegReg"         : bytearray([chr(0),chr(1),chr(0),chr(0)]),
-    "movRegIndReg"      : bytearray([chr(0),chr(2),chr(0),chr(0)]),
-    "movRegConst"       : bytearray([chr(0),chr(3),chr(0),chr(0)]),
-    "movRegBaseOffset"  : bytearray([chr(0),chr(4),chr(0),chr(0)])
-}
-
-symbols = {
-#register indexes:
-    "R0" : chr(0),
-    "R1" : chr(1),
-    "R2" : chr(2),
-    "R3" : chr(3),
-    "R4" : chr(4),
-    "R5" : chr(5),
-    "R6" : chr(6),
-    "R7" : chr(7),
-    "R8" : chr(8),
-    "R9" : chr(9),
-    "BP" : chr(10),
-#syscalls:
-    "sys_dump" : chr(0)
-}
-
-def err(arg):
-    sys.stderr.write("FATAL ERROR: ")
-    sys.stderr.write(arg+"\n")
-    exit(1)
-
-def convert(tkns, i):
-    if len(tkns) < 4:
-        err("Not enough tokens on line "+str(i)+": ["+','.join(tkns)+"]");
-    op  = tkns[0]
-    if op == "label:":
-        symbols[arg] = i*_CMD_SIZE
-        return []
-    else:
-        opcode = opcodes[op]
-    opA = toBytes16(int(tkns[1]))
-    opB = toBytes16(int(tkns[2]))
-    opC = toBytes16(int(tkns[3]))
-    #operand = symbols[arg] if arg in symbols else int(arg)
-    instructions = opcode+opA+opB+opC
-    return instructions 
-
-def toBytes(num):
-bytearray([chr(int(tkns[1])),chr(0)]);
-    try:
-        if num > 127:
-            return bytearray([num,0])
-        else:
-            return bytearray([num])
-    except Exception as e:
-        print "%s: number %s" % (e,num)
-        raise Exception("fail")
-
-def readLoop():
-    i = 0;
-    byteCode = bytearray()
-    for text in sys.stdin.readlines():
-        tkns = text.strip().split(";")[0].strip().split()
-        if len(tkns) != 0:
-            instructions = convert(tkns, i)
-            if len(instructions) > 0:
-                byteCode += instructions
-        i += 1
-    return byteCode
-
-bc = readLoop()
-open("a.out", "wb").write(bc)
-print "SYMBOL DUMP:"
-print symbols
+open("a.out", "w").write('\n'.join(data)+"\n")
