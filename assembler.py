@@ -1,5 +1,4 @@
 #!/usr/bin/python
-import re
 
 ################# TYPES ########################################
 class Operation(object):
@@ -9,18 +8,15 @@ class Operation(object):
             err("Operation not found: \""+name+"\"", lineNum)
         self.arguments = arguments
         self.lineNum = lineNum
-        self.value = ops[name][0]
-        self.argumentTypes = ops[name][1]
-        #Argument types: [["Reg","Const"],["Reg","IndConst"],["Reg","IndReg"]]
-        #for           `mov R1    35`, `mov R1,   [35]`,  `mov R1    [R2]`.
-        argTypes = [type(arg).__name__ for arg in arguments]
-        if not argTypes in self.argumentTypes:
+        argTypes = " ".join([type(arg).__name__ for arg in arguments])
+        if argTypes in ops[name]:
+            self.value = ops[name][argTypes]
+        else:
             err("Incorrect argument pattern for nmemonic \""+name+"\". " +
-                "Acceptable argument patterns are: \n" +
-                ", ".join([" ".join(a) for a in self.argumentTypes]), lineNum)
+                "Acceptable argument patterns are: \n" + argTypes, lineNum)
+        self.argumentTypes = argTypes
     def toString(self):
         return self.name+"("+', '.join([arg.toString() for arg in self.arguments])+")"
-
     def compile(self):
         compilation = self.value+"".join([arg.compile() for arg in self.arguments])
         length = len(compilation)
@@ -93,40 +89,82 @@ def err(msg, line):
     exit(1)
 
 ################# TABLES #######################################
-ops = { 
-    "debugOp"         : ["\x00\x00",[["Const","Const","Const"]]],
-    "movRegConst"     : ["\x01\x00",[["Reg","Const"]]],
-    "movRegIndConst"  : ["\x02\x00",[["Reg","IndConst"]]],
-    "movRegReg"       : ["\x03\x00",[["Reg","Reg"]]],
-    "movRegIndReg"    : ["\x04\x00",[["Reg","IndReg"]]],
-    "jump"            : ["\x05\x00\x00\x00",[["Const"]]],
-    "jumpE"           : ["\x06\x00\x00\x00",[["Const"]]],
-    "jumpNE"          : ["\x07\x00\x00\x00",[["Const"]]],
-    "jumpLT"          : ["\x08\x00\x00\x00",[["Const"]]],
-    "jumpGT"          : ["\x09\x00\x00\x00",[["Const"]]],
-    "cmpRegReg"       : ["\x0b\x00",[["Reg","Reg"]]],
-    "cmpRegConst"     : ["\x0c\x00",[["Reg","Const"]]],
-    "pushReg"         : ["\x0d\x00",[["Reg"]]],
-    "pushConst"       : ["\x0e\x00\x00\x00",[["Const"]]],
-    "popReg"          : ["\x0f\x00",[["Reg"]]],
-    "xorRegReg"       : ["\x11\x00",[["Reg","Reg"]]],
-    "xorRegConst"     : ["\x12\x00",[["Reg","Const"]]],
-    "lshiftRegReg"    : ["\x13\x00",[["Reg","Reg"]]],
-    "rshiftRegReg"    : ["\x14\x00",[["Reg","Reg"]]],
-    "lshiftRegConst"  : ["\x15\x00",[["Reg","Const"]]],
-    "rshiftRegConst"  : ["\x16\x00",[["Reg","Const"]]],
-    "andRegReg"       : ["\x17\x00",[["Reg","Reg"]]],
-    "andRegConst"     : ["\x18\x00",[["Reg","Const"]]],
-    "notReg"          : ["\x19\x00",[["Reg"]]],
-    "addRegReg"       : ["\x1a\x00",[["Reg","Reg"]]],
-    "addRegConst"     : ["\x1b\x00",[["Reg","Const"]]],
-    "subRegReg"       : ["\x1c\x00",[["Reg","Reg"]]],
-    "subRegConst"     : ["\x1d\x00",[["Reg","Const"]]],
-    "multRegReg"      : ["\x1e\x00",[["Reg","Reg"]]],
-    "multRegConst"    : ["\x1f\x00",[["Reg","Const"]]],
-    "divRegReg"       : ["\x20\x00",[["Reg","Reg"]]],
-    "divRegConst"     : ["\x21\x00",[["Reg","Const"]]],
-    "syscall"         : ["\x10\x00\x00\x00",[["SysCall"]]]
+ops = {
+    "debug" : {
+        "Const Const Const" : "\x00\x00"
+    },
+    "mov" : {
+        "Reg Const"     :"\x01\x00",
+        "Reg IndConst"  :"\x02\x00",
+        "Reg Reg"       :"\x03\x00",
+        "Reg IndReg"    :"\x04\x00"
+    },
+    "jump" : {
+        "Const" : "\x05\x00\x00\x00"
+    },
+    "jumpE" : {
+        "Const" : "\x06\x00\x00\x00"
+    },
+    "jumpNE" : {
+        "Const" : "\x07\x00\x00\x00"
+    },
+    "jumpLT" : {
+        "Const" : "\x08\x00\x00\x00"
+    },
+    "jumpGT" : {
+        "Const" : "\x09\x00\x00\x00"
+    },
+    "cmpRegReg" : {
+        "Reg Reg" : "\x0b\x00"
+    },
+    "cmpRegConst" : {
+        "Reg Const" : "\x0c\x00"
+    },
+    "push" : {
+        "Reg" : "\x0d\x00",
+        "Const" : "\x0e\x00\x00\x00"
+    },
+    "pop" : {
+        "Reg" : "\x0f\x00"
+    },
+    "xor" : {
+        "Reg Reg" : "\x11\x00",
+        "Reg Const" : "\x12\x00"
+    },
+    "lshift" : {
+        "Reg Reg" : "\x13\x00",
+        "Reg Const" : "\x15\x00"
+    },
+    "rshift" : {
+        "Reg Reg" : "\x14\x00",
+        "Reg Const" : "\x16\x00"
+    },
+    "and" : {
+        "Reg Reg" : "\x17\x00",
+        "Reg Const" : "\x18\x00"
+    },
+    "not" : {
+        "Reg" : "\x19\x00"
+    },
+    "add" : {
+        "Reg Reg" : "\x1a\x00",
+        "Reg Const" : "\x1b\x00"
+    },
+    "sub" : {
+        "Reg Reg" : "\x1c\x00",
+        "Reg Const" : "\x1d\x00"
+    },
+    "mult" : {
+        "Reg Reg" : "\x1e\x00",
+        "Reg Const" : "\x1f\x00"
+    },
+    "div" : {
+        "Reg Reg" : "\x20\x00",
+        "Reg Const" : "\x21\x00"
+    },
+    "syscall" : {
+        "SysCall" : "\x10\x00\x00\x00"
+    }
 }
 
 syscalls = {
@@ -162,9 +200,8 @@ class AST(object):
             self.astSequence.append(op)
 
     def identify(self, token, line):
-        match = re.match(r'\[(.+)\]', token)
-        if match != None:
-            key = match.group(1)
+        if token[0] == '[' and token[-1] == ']':
+            key = token[1:-1]
             if key in registers:
                 return IndReg(key, line)
             else:
