@@ -1,5 +1,19 @@
 #!/usr/bin/python
 
+from optparse import OptionParser
+
+parser = OptionParser()
+parser.add_option("-o", "--output", dest="outputFile", help="Assemble output to FILE", metavar="FILE")
+parser.add_option("-v", "--verbose", action="store_false", dest="verbose", default=False, help="Verbose output.")
+(options, args) = parser.parse_args()
+sourceFile = args[0] if len(args) > 0 else ""
+outputFile = options.outputFile
+outputFile = outputFile if outputFile else "a.out"
+verbose = options.verbose
+if not sourceFile:
+    print "No source file specified. Usage: SASM source_file"
+    exit(1)
+
 ################# TYPES ########################################
 class Operation(object):
     def __init__(self, name, arguments, lineNum=0):
@@ -221,7 +235,7 @@ class AST(object):
 
 
 ################# ENTRY POINT ##################################
-sourceData = [line.split() for line in open("source.asm").readlines()] #heh, this is your parser
+sourceData = [line.split() for line in open(sourceFile).readlines()] #heh, this is your parser
 ast = AST(sourceData)
-print ast.toString()
-open("a.out","wb").write(ast.compile())
+if verbose: print ast.toString()
+open(outputFile, "wb").write(ast.compile())
