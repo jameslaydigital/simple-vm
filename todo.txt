@@ -1,0 +1,15 @@
+docs:
+
+- add consideration about jump alignment (jumping to half way through an instruction)
+
+assembler:
+
+- add labels functionality
+- add another mov instruction to write directly to memory
+
+vm:
+
+- make SP as accessible as a general purpose register
+- add print syscall
+- add another mov instruction to write indirectly to memory via both constant and register
+- think about threading
