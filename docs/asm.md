@@ -136,6 +136,12 @@ vectors. These are not accessible by memory and are implemented on the host OS.
 - `exit` : exit the program and terminate the vm.
 - `print` : print a string (NIY)
 
+    ; Examples
+    syscall dump ; dump meminfo
+    syscall print ; print will use stack arguments
+    syscall exit ; will exit with exit code from stack
+
+
 ####I/O
 
 The other way to interface with the host operating system is messaging through
