@@ -1,3 +1,3 @@
-#!/usr/local/bin/bash
+#!/usr/bin/bash
 
-gcc -o ./bin/vm ./vm.c -Wall && ./bin/vm ./a.out
+gcc -o ./bin/vm.exe ./vm.c -Wall && ./bin/vm.exe ./a.out
