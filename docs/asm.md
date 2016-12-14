@@ -132,11 +132,9 @@ Interfacing with the host operating system will happen through two major ways:
 the most common way is through predefined system calls. These are not interrupt
 vectors. These are not accessible by memory and are implemented on the host OS. 
 
-syscalls = {
-    "dump"  : "\x00\x00",
-    "exit"  : "\x01\x00",
-    "print" : "\x02\x00"
-}
+- `dump` : dump the value of registers and other helpful memory information to stdout.
+- `exit` : exit the program and terminate the vm.
+- `print` : print a string (NIY)
 
 ####I/O
 
