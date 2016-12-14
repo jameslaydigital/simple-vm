@@ -32,7 +32,7 @@ The executable file format is basically a disk image that is copied to the heap
 verbatim, meaning byte 0 in the file is byte 0 on the heap.
 
 Instructions are executed off the heap beginning at heap address 8.
-There are 10 general purpose registers, R1-R10 (R10 is also known as BP,
+There are 11 general purpose registers, R0-R10 (R10 is also known as BP,
 typically used as the base pointer), a stack pointer SP, and an instruction
 pointer IP.  
 
@@ -41,7 +41,7 @@ REGISTERS:
 
 | Register   | Function                   |
 | -----------| -------------------------- |
-| R1-R10     | general purpose registers  |
+| R0-R10     | general purpose registers  |
 | SP         | stack pointer              |
 | IP         | instruction pointer        |
 | CMP        | comparison register        |
