@@ -1,18 +1,25 @@
 unsigned short toUInt16(unsigned char a, unsigned char b) {
     unsigned short shortA = ((unsigned short)a); //LSB
     unsigned short shortB = ((unsigned short)b)<<8; //MSB
+    //printf("\t\t\ttoUInt16: %#1x %#1x\n", shortA, shortB); //debug
     return shortA|shortB;
 }
 
 unsigned int toUInt32(unsigned short a, unsigned short b) {
     unsigned int intA = ((unsigned int)a); //LSBs
     unsigned int intB = ((unsigned int)b)<<8; //MSBs
+    //printf("\t\ttoUInt32: %#1x %#1x\n", intA, intB); //debug
     return intA|intB;
 }
 
 unsigned int bytesToUInt(unsigned char *arr) {
-    unsigned short shortA = toUInt16(arr[0], arr[1]);
-    unsigned short shortB = toUInt16(arr[2], arr[3]);
+    unsigned char charA = (unsigned char)*arr;
+    unsigned char charB = (unsigned char)*(arr+1);
+    unsigned char charC = (unsigned char)*(arr+2);
+    unsigned char charD = (unsigned char)*(arr+3);
+    //printf("\t\tbytesToUInt: %#1x %#1x %#1x %#1x\n", charA, charB, charC, charD); //debug
+    unsigned short shortA = toUInt16(charA, charB);
+    unsigned short shortB = toUInt16(charC, charD);
     return toUInt32(shortA, shortB);
 }
 

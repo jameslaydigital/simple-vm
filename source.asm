@@ -1,9 +1,5 @@
-;    _fmap[0x00] = &debugOp;
-;    _fmap[0x01] = &movRegReg;
-;    _fmap[0x02] = &movRegIndReg;
-;    _fmap[0x03] = &movRegConst;
-;    _fmap[0x04] = &movRegBaseOffset;
-debugOp 0 0 0
-debugOp 8 2 1
-movRegConst 0 5 0
-movRegReg 1 0 0
+debug 0 0 0
+mov R0 5
+mov R1 R0
+syscall dump
+syscall exit
