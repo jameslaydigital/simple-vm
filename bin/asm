@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+import re
 from optparse import OptionParser
 
 parser = OptionParser()
@@ -11,10 +11,14 @@ outputFile = options.outputFile
 outputFile = outputFile if outputFile else "a.out"
 verbose = options.verbose
 if not sourceFile:
-    print "No source file specified. Usage: SASM source_file"
+    print "No source file specified. Usage: asm source_file"
     exit(1)
 
+################# DEFS #########################################
+INSTRUCTION_LENGTH = 8
+
 ################# TYPES ########################################
+
 class Operation(object):
     def __init__(self, name, arguments, lineNum=0):
         self.name = name
@@ -50,8 +54,9 @@ class Reg(object):
         return "<Reg "+self.name+">"
     def compile(self):
         return self.value
+
 class IndReg(object):
-    def __init__(self, token, lineNum):
+    def __init__(self, name, lineNum):
         self.name = name
         if name in registers:
             self.value = registers[name]
@@ -64,10 +69,19 @@ class IndReg(object):
 
 class Const(object):
     def __init__(self, token, lineNum):
-        #ID using original token what kind of constant we're dealing
-        #with. Could be hex, binary, decimal, or octal.
-        self.value = int(token)
         self.lineNum = lineNum
+        match = re.match(r"^\d+$", token)
+        if match != None:
+            self.value = int(token)
+            return
+        match = re.match(r"^(0x)([0-9a-fA-F]+)$", token)
+        if match != None:
+            self.value = int(token, 16)
+            return
+        match = re.match(r"^(0b)([01]+)$", token)
+        if match != None:
+            self.value = int(token, 2)
+            return
     def toString(self):
         return "<Const "+str(self.value)+">"
     def compile(self):
@@ -81,7 +95,12 @@ class IndConst(object):
         return "<IndConst "+str(self.value)+">"
     def compile(self):
         #TODO: if self.value > 255, two bytes. If > 65535, 4 bytes
-        return chr(self.value)+"\x00"
+        if self.value < 256:
+            return chr(self.value)+"\x00\x00\x00"
+        if self.value < 65536:
+            return chr(self.value & 0xff) + chr((self.value >> 8) & 0xff) + "\x00\x00"
+        return chr(self.value&0xff)+chr((self.value>>8)&0xff)+chr((self.value>>16)&0xff)+chr((self.value>>24)&0xff)
+
 
 
 class SysCall(object):
@@ -96,7 +115,6 @@ class SysCall(object):
     def compile(self):
         return self.value
 
-
 ################# UTILS ########################################
 def err(msg, line):
     print msg + " on line "+str(line+1)+"."
@@ -108,76 +126,89 @@ ops = {
         "Const Const Const" : "\x00\x00"
     },
     "mov" : {
-        "Reg Const"     :"\x01\x00",
-        "Reg IndConst"  :"\x02\x00",
-        "Reg Reg"       :"\x03\x00",
-        "Reg IndReg"    :"\x04\x00"
+        "Reg Reg"       :"\x01\x00",
+        "Reg Const"     :"\x02\x00",
+        "Reg IndConst"  :"\x03\x00",
+        "Reg IndReg"    :"\x04\x00",
+        "IndReg Reg"    :"\x05\x00",
+        "IndReg Const"  :"\x06\x00",
+        "IndConst Reg"  :"\x07\x00"
+        #"IndConst Const":"\x08\x00" instr size limitation
+    },
+    "label" : {
+        "Name" : "\0"
+    },
+    "noop" : {
+        ""  :"\x08\x00"
     },
     "jump" : {
-        "Const" : "\x05\x00\x00\x00"
-    },
-    "jumpE" : {
-        "Const" : "\x06\x00\x00\x00"
-    },
-    "jumpNE" : {
-        "Const" : "\x07\x00\x00\x00"
-    },
-    "jumpLT" : {
-        "Const" : "\x08\x00\x00\x00"
-    },
-    "jumpGT" : {
         "Const" : "\x09\x00\x00\x00"
     },
+    "jumpE" : {
+        "Const" : "\x0a\x00\x00\x00"
+    },
+    "jumpNE" : {
+        "Const" : "\x0b\x00\x00\x00"
+    },
+    "jumpLT" : {
+        "Const" : "\x0c\x00\x00\x00"
+    },
+    "jumpGT" : {
+        "Const" : "\x0d\x00\x00\x00"
+    },
     "cmpRegReg" : {
-        "Reg Reg" : "\x0b\x00"
+        "Reg Reg" : "\x0e\x00"
     },
     "cmpRegConst" : {
-        "Reg Const" : "\x0c\x00"
+        "Reg Const" : "\x0f\x00"
     },
     "push" : {
-        "Reg" : "\x0d\x00",
-        "Const" : "\x0e\x00\x00\x00"
+        "Reg" : "\x11\x00",
+        "Const" : "\x12\x00\x00\x00"
     },
     "pop" : {
-        "Reg" : "\x0f\x00"
+        "Reg" : "\x13\x00"
     },
     "xor" : {
-        "Reg Reg" : "\x11\x00",
-        "Reg Const" : "\x12\x00"
-    },
-    "lshift" : {
-        "Reg Reg" : "\x13\x00",
+        "Reg Reg" : "\x14\x00",
         "Reg Const" : "\x15\x00"
     },
+    "lshift" : {
+        "Reg Reg" : "\x16\x00",
+        "Reg Const" : "\x17\x00"
+    },
     "rshift" : {
-        "Reg Reg" : "\x14\x00",
-        "Reg Const" : "\x16\x00"
+        "Reg Reg" : "\x18\x00",
+        "Reg Const" : "\x19\x00"
     },
     "and" : {
-        "Reg Reg" : "\x17\x00",
-        "Reg Const" : "\x18\x00"
-    },
-    "not" : {
-        "Reg" : "\x19\x00"
-    },
-    "add" : {
         "Reg Reg" : "\x1a\x00",
         "Reg Const" : "\x1b\x00"
     },
+    "not" : {
+        "Reg" : "\x1c\x00"
+    },
+    "add" : {
+        "Reg Reg" : "\x1d\x00",
+        "Reg Const" : "\x1e\x00"
+    },
     "sub" : {
-        "Reg Reg" : "\x1c\x00",
-        "Reg Const" : "\x1d\x00"
+        "Reg Reg" : "\x1f\x00",
+        "Reg Const" : "\x20\x00"
     },
     "mult" : {
-        "Reg Reg" : "\x1e\x00",
-        "Reg Const" : "\x1f\x00"
+        "Reg Reg" : "\x21\x00",
+        "Reg Const" : "\x22\x00"
     },
     "div" : {
-        "Reg Reg" : "\x20\x00",
-        "Reg Const" : "\x21\x00"
+        "Reg Reg" : "\x23\x00",
+        "Reg Const" : "\x24\x00"
     },
     "syscall" : {
         "SysCall" : "\x10\x00\x00\x00"
+    },
+    "db" : {
+        "Const Const Const Const" : ""
     }
 }
 
@@ -199,7 +230,8 @@ registers = {
     "R8" : "\x08\x00",
     "R9" : "\x09\x00",
     "R10": "\x0a\x00",
-    "BP" : "\x0a\x00"
+    "BP" : "\x0a\x00",
+    "SP" : "\x0b\x00"
 }
 
 ################# AST ##########################################
@@ -209,11 +241,11 @@ class AST(object):
         self.astSequence = []
         for i in range(len(source)):
             tokens = source[i]
-            arguments = [self.identify(token,i) for token in tokens[1:]] if len(tokens) > 1 else [] #creates your AST
+            arguments = [self.identify(token,i) for token in tokens[1:]] if len(tokens) > 1 else []
             op = Operation(tokens[0], arguments, i) #name, arguments, line#
             self.astSequence.append(op)
 
-    def identify(self, token, line):
+    def identify(self, token, line, arguments=[]):
         if token[0] == '[' and token[-1] == ']':
             key = token[1:-1]
             if key in registers:
@@ -225,17 +257,60 @@ class AST(object):
                 return Reg(token, line)
             if token in syscalls:
                 return SysCall(token, line)
-            return Const(token, line)
-
+            if token in labels:
+                return Const(str(labels[token]), line)
+            if tokIsNumber(token):
+                return Const(token, line)
+            err("Unrecognized token: \""+token+"\"", line)
     def toString(self):
         return "{\n\t"+",\n\t".join([op.toString() for op in self.astSequence])+"\n}"
-
     def compile(self):
+        #1st pass: proc labels...
         return "".join([op.compile() for op in self.astSequence])
 
+def tokIsNumber(string):
+    if re.match(r"^0x[0-9a-fA-F]+$", string) != None:
+        return True
+    if re.match(r"^0b[01]+$", string) != None:
+        return True
+    if re.match(r"^\d+$", string) != None:
+        return True
+    return False
 
 ################# ENTRY POINT ##################################
-sourceData = [line.split() for line in open(sourceFile).readlines()] #heh, this is your parser
+#sourceData = [line.split() for line in open(sourceFile).readlines()]
+
+fdata = open(sourceFile).read()
+
+#LABEL PREPROCESSOR
+#start by giving labels their own line
+flines = re.sub(r"\n *(.[a-zA-Z0-9.]+):", r"\nlabel \1\n", fdata).split("\n")
+print "\n".join(flines)
+labels = {}
+i = 0
+while i < len(flines):
+    line = flines[i]
+    nocmt = line.split(";").pop(0).strip() #rm comments
+    if nocmt == "": #ignore whitespace and empties
+        flines.pop(i) #get rid of it so it doesn't fuck our line count
+    else:
+        toks = line.split()
+        print str(toks)
+        if toks[0] == "label":
+            if len(toks) == 1:
+                err("Label has no name.", i)
+            labels[toks[1]] = i*INSTRUCTION_LENGTH
+            flines.pop(i)
+            i -= 1
+        i += 1
+
+#PARSER
+sourceData = []
+for line in flines:
+    nocmt = line.split(";").pop(0).strip() #rm comments
+    if nocmt != "": #ignore whitespace and empties
+        sourceData.append(nocmt.split())
+
 ast = AST(sourceData)
 if verbose: print ast.toString()
 open(outputFile, "wb").write(ast.compile())

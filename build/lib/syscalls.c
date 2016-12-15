@@ -21,5 +21,7 @@ void sys_exit(void) {
 }
 
 void sys_print(void) {
-    printf("\nPRINT\n");
+    unsigned int base = bytesToUInt(_buff+_regs[SP]);
+    unsigned int length = bytesToUInt(_buff+(_regs[SP]+4));
+    write(1, _buff+base, length);
 }

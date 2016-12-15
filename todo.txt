@@ -1,15 +1,24 @@
 docs:
+[ĳ] add consideration about jump alignment (jumping to half way through an instruction)
 
-- add consideration about jump alignment (jumping to half way through an instruction)
+vm  asm
+[ĳ] [ĳ] make SP as accessible as a general purpose register
 
-assembler:
+[ĳ] [ĳ] add another mov instruction to write indirectly to memory via both
+        constant and register
 
-- add labels functionality
-- add another mov instruction to write directly to memory
+--- [ĳ] add "ignore whitespace and comments" feature
 
-vm:
+--- [ĳ] add "unexpected token" feature
 
-- make SP as accessible as a general purpose register
-- add print syscall
-- add another mov instruction to write indirectly to memory via both constant and register
-- think about threading
+--- [ĳ] add labels feature
+
+--- [ĳ] make sure labels aren't reserved keywords
+
+[ĳ] [ĳ] add print syscall
+
+[ĳ] [ĳ] add data directives
+
+--- [ĳ] fix label comment offset (where comment lines contribute to line count, offsetting the label's byte count
+
+[ ] [ ] think about threading

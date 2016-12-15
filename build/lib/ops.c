@@ -6,6 +6,10 @@ void debugOp(unsigned short A,unsigned short B,unsigned short C) {
     return;
 }
 
+void noOp(unsigned short A,unsigned short B,unsigned short C) {
+    return;
+}
+
 void movRegConst(unsigned short r,unsigned short LSB,unsigned short MSB) {
     //loads register A immediate constant
     if ( r < MAX_REG_INDEX ) {
@@ -37,6 +41,39 @@ void movRegIndReg(unsigned short rA,unsigned short rB,unsigned short NA) {
         _regs[rA] = bytesToUInt(_buff+b);
     } else 
         printf("ERR: movRegIndReg: %s: %#1x, %#1x.\n",fnote,rA,rB);
+}
+
+void movIndConstReg(unsigned short LSB,unsigned short MSB,unsigned short r) {
+    //mov [Const] Reg
+    if ( r < MAX_REG_INDEX ) {
+        unsigned int base = toUInt32(LSB,MSB);
+        unsigned int num = _regs[r];
+        if ( base < _buff_size ) {
+            uIntToBytes(num,_buff+base);
+        } else printf("ERR: out of bounds memory access: %#1x.\n",base);
+    } else printf("ERR: movRegIndReg: %s: %#1x.\n",fnote,r);
+}
+
+void movIndRegReg(unsigned short rA,unsigned short rB,unsigned short NA) {
+    //mov [Reg] Reg
+    if ( rA < MAX_REG_INDEX && rB < MAX_REG_INDEX ) {
+        unsigned int base = _regs[rA];
+        unsigned int num = _regs[rB];
+        if ( base < _buff_size ) {
+            uIntToBytes(num,_buff+base);
+        } else printf("ERR: out of bounds memory access: %#1x.\n",base);
+    } else printf("ERR: movRegIndReg: %s: %#1x, %#1x.\n",fnote,rA,rB);
+}
+
+void movIndRegConst(unsigned short r,unsigned short LSB,unsigned short MSB) {
+    //mov [Reg] Reg
+    if ( r < MAX_REG_INDEX ) {
+        unsigned int base = _regs[r];
+        unsigned int val = toUInt32(LSB,MSB);
+        if ( base < _buff_size ) {
+            uIntToBytes(val,_buff+base);
+        } else printf("ERR: out of bounds memory access: %#1x.\n",base);
+    } else printf("ERR: movRegIndReg: %s: %#1x.\n",fnote,r);
 }
 
 

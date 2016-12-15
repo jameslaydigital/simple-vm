@@ -30,12 +30,12 @@ typedef enum Error Err;
 #define R7 7
 #define R8 8
 #define R9 9
-#define BP 10    //Base pointer is another general use register. More for naming convenience.
+#define BP 10   //Base pointer is another general use register. More for naming convenience.
+#define SP 11   //stack pointer ( special, but general access )
 //specialized:
-#define SP 11   //stack pointer
 #define IP 12   //instruction pointer or program counter
 #define CMP 13  //comparison register
-#define MAX_REG_INDEX 11
+#define MAX_REG_INDEX 12
 #define NUM_REGS 14 //used to initialize _regs[]
 //REGISTERS DONE
 

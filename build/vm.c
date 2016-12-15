@@ -8,8 +8,6 @@
 #define MAX_NUM_OPS 0xff
 
 int main(int argc, char *argv[]) {
-    printf("Firing up the virtual machine...\n\n");
-    printf("OPERATION FEED:\n");
     //initialize instruction pointer
     if ( argc != 2 ) fail(ERR_ARG_COUNT);
     loadBuffer(argv[1]);
@@ -32,53 +30,58 @@ void loadSysCalls() {
 
 void loadFunctionTable() {
 
-//==MOV=========================//
     _fmap[0x00] = &debugOp;             //PASS
-    _fmap[0x01] = &movRegConst;         //PASS
-    _fmap[0x02] = &movRegIndConst;      //PASS
-    _fmap[0x03] = &movRegReg;           //PASS
+//==MOV=========================//
+    _fmap[0x01] = &movRegReg;           //PASS
+    _fmap[0x02] = &movRegConst;         //PASS
+    _fmap[0x03] = &movRegIndConst;      //PASS
     _fmap[0x04] = &movRegIndReg;        //PASS
+    _fmap[0x05] = &movIndRegReg;        //PASS
+    _fmap[0x06] = &movIndRegConst;      //PASS
+    _fmap[0x07] = &movIndConstReg;      //PASS
+    //_fmap[0x08] = &movIndConstConst; instruction size limitation
+    _fmap[0x08] = &noOp;
 //==JUMP========================//
-    _fmap[0x05] = &jump;                //PASS
-    _fmap[0x06] = &jumpE;               //PASS
-    _fmap[0x07] = &jumpNE;              //PASS
-    _fmap[0x08] = &jumpLT;              //PASS
-    _fmap[0x09] = &jumpGT;              //PASS
+    _fmap[0x09] = &jump;                //PASS
+    _fmap[0x0a] = &jumpE;               //PASS
+    _fmap[0x0b] = &jumpNE;              //PASS
+    _fmap[0x0c] = &jumpLT;              //PASS
+    _fmap[0x0d] = &jumpGT;              //PASS
 //==CMP=========================//
-    _fmap[0x0b] = &cmpRegReg;           //PASS
-    _fmap[0x0c] = &cmpRegConst;         //PASS
-//==PUSH========================//
-    _fmap[0x0d] = &pushReg;             //PASS
-    _fmap[0x0e] = &pushConst;           //PASS
-//==POP=========================//
-    _fmap[0x0f] = &popReg;              //PASS
+    _fmap[0x0e] = &cmpRegReg;           //PASS
+    _fmap[0x0f] = &cmpRegConst;         //PASS
 //==SYSCALL=====================//
     _fmap[0x10] = &syscallOp;           //PASS
+//==PUSH========================//
+    _fmap[0x11] = &pushReg;             //PASS
+    _fmap[0x12] = &pushConst;           //PASS
+//==POP=========================//
+    _fmap[0x13] = &popReg;              //PASS
 //==XOR=========================//
-    _fmap[0x11] = &xorRegReg;           //PASS
-    _fmap[0x12] = &xorRegConst;         //PASS
+    _fmap[0x14] = &xorRegReg;           //PASS
+    _fmap[0x15] = &xorRegConst;         //PASS
 //==SHIFT=======================//
-    _fmap[0x13] = &lshiftRegReg;        //PASS
-    _fmap[0x14] = &rshiftRegReg;        //PASS
-    _fmap[0x15] = &lshiftRegConst;      //PASS
-    _fmap[0x16] = &rshiftRegConst;      //PASS
+    _fmap[0x16] = &lshiftRegReg;        //PASS
+    _fmap[0x17] = &rshiftRegReg;        //PASS
+    _fmap[0x18] = &lshiftRegConst;      //PASS
+    _fmap[0x19] = &rshiftRegConst;      //PASS
 //==AND=========================//
-    _fmap[0x17] = &andRegReg;           //PASS
-    _fmap[0x18] = &andRegConst;         //PASS
+    _fmap[0x1a] = &andRegReg;           //PASS
+    _fmap[0x1b] = &andRegConst;         //PASS
 //==NOT=========================//
-    _fmap[0x19] = &notReg;              //PASS
+    _fmap[0x1c] = &notReg;              //PASS
 //==ADD=========================//
-    _fmap[0x1a] = &addRegReg;           //PASS
-    _fmap[0x1b] = &addRegConst;         //PASS
+    _fmap[0x1d] = &addRegReg;           //PASS
+    _fmap[0x1e] = &addRegConst;         //PASS
 //==SUB=========================//
-    _fmap[0x1c] = &subRegReg;           //PASS
-    _fmap[0x1d] = &subRegConst;         //PASS
+    _fmap[0x1f] = &subRegReg;           //PASS
+    _fmap[0x20] = &subRegConst;         //PASS
 //==MULT========================//
-    _fmap[0x1e] = &multRegReg;          //PASS
-    _fmap[0x1f] = &multRegConst;        //PASS
+    _fmap[0x21] = &multRegReg;          //PASS
+    _fmap[0x22] = &multRegConst;        //PASS
 //==DIV=========================//
-    _fmap[0x20] = &divRegReg;           //PASS
-    _fmap[0x21] = &divRegConst;         //PASS
+    _fmap[0x23] = &divRegReg;           //PASS
+    _fmap[0x24] = &divRegConst;         //PASS
 }
 
 int executionLoop() {
@@ -96,7 +99,7 @@ int execute(int loc) {
     int operandB = toUInt16( _buff[loc+4], _buff[loc+5]);
     int operandC = toUInt16( _buff[loc+6], _buff[loc+7]);
     if ( opcode >= MAX_NUM_OPS ) {
-        printf("\nNo operation in op table for opcode '%#1x'.", opcode);
+        fprintf(stderr, "\nNo operation in op table for opcode '%#1x'.", opcode);
         return 1;
     }
     fn = _fmap[opcode];
@@ -125,10 +128,10 @@ int loadBuffer(char *fname) {
 
 int fail( Err failure_code ) {
     if ( failure_code == ERR_FILE )
-        printf("ERR: File could not be opened.\n");
+        fprintf(stderr, "ERR: File could not be opened.\n");
     if ( failure_code == ERR_ARG_COUNT )
-        printf("ERR: Not enough arguments.\nUsage: vm source_file\n");
+        fprintf(stderr, "ERR: Not enough arguments.\nUsage: vm source_file\n");
     if ( failure_code == ERR_MEM )
-        printf("ERR: Failed to allocate enough memory read input file.\n");
+        fprintf(stderr, "ERR: Failed to allocate enough memory read input file.\n");
     exit(1);
 }

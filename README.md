@@ -97,3 +97,8 @@ There is no magic number or separation between data and instructions. This
 means this vm could easily be exploited for the purpose of privilege
 escalation.  
 
+Jumping requires careful consideration because you are allowed to jump to
+literally any byte within memory. This means not only is there no segmenting
+and memory protection, there's also the risk that you will jump to a misaligned
+byte, beginning execution halfway through an instruction.
+
