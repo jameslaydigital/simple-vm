@@ -21,7 +21,15 @@ void sys_exit(void) {
 }
 
 void sys_print(void) {
+    //write(int fildes, const void *buf, size_t nbyte);
     unsigned int base = bytesToUInt(_buff+_regs[SP]);
     unsigned int length = bytesToUInt(_buff+(_regs[SP]+4));
     write(1, _buff+base, length);
+}
+
+void sys_read(void) {
+    //read(int fildes, void *buf, size_t nbyte);
+    unsigned int base = bytesToUInt(_buff+_regs[SP]);
+    unsigned int length = bytesToUInt(_buff+(_regs[SP]+4));
+    read(0, _buff+base, length);
 }

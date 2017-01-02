@@ -26,6 +26,7 @@ void loadSysCalls() {
     _syscalls[0x00] = &sys_dump;
     _syscalls[0x01] = &sys_exit;
     _syscalls[0x02] = &sys_print;
+    _syscalls[0x03] = &sys_read;
 }
 
 void loadFunctionTable() {

@@ -1,24 +1,71 @@
-docs:
-[ĳ] add consideration about jump alignment (jumping to half way through an instruction)
-
 vm  asm
-[ĳ] [ĳ] make SP as accessible as a general purpose register
 
-[ĳ] [ĳ] add another mov instruction to write indirectly to memory via both
-        constant and register
+--- [■] Assembler should throw syntax error if a LabelDef isn't followed by an Operator
 
---- [ĳ] add "ignore whitespace and comments" feature
+--- [■] Assembler should throw syntax error if a line doesn't start with a LabelDef or an Operator
 
---- [ĳ] add "unexpected token" feature
+[■] [■] add syscall for gathering user input
 
---- [ĳ] add labels feature
-
---- [ĳ] make sure labels aren't reserved keywords
-
-[ĳ] [ĳ] add print syscall
-
-[ĳ] [ĳ] add data directives
-
---- [ĳ] fix label comment offset (where comment lines contribute to line count, offsetting the label's byte count
+--- [■] add support for directives that are some multiple of INSTRUCTION_SIZE long (for strings)
+        ** perhaps once the AST is composed, each Operation instance will know
+        ** how long its resultant instruction will be and can tell the assembler.
+        (labels should be processed during this time)
 
 [ ] [ ] think about threading
+
+--- [■] add string defining directive and string datatype
+
+--- [■] add char datatype
+
+[■] [■] make SP as accessible as a general purpose register
+
+[■] [■] add another mov instruction to write indirectly to memory via both
+        constant and register
+
+--- [■] add "ignore whitespace and comments" feature
+
+--- [■] add "unexpected token" feature
+
+--- [■] add labels feature
+
+--- [■] make sure labels aren't reserved keywords
+
+[■] [■] add print syscall
+
+[■] [■] add data directives
+
+--- [■] fix label comment offset (where comment lines contribute to line count, offsetting the label's byte count
+
+docs:
+
+[■] add consideration about jump alignment (jumping to half way through an instruction)
+
+
+
+
+
+Parser change Requirements:
+
+1. Parser makes tokens. Period.
+2. Tokens should be analyzed as contextual rules.
+    - Broken into statements that are terminated by newline.
+    - Perhaps token 1 of each new statement is guaranteed to be an operation, subsequent tokens 
+
+
+            int i = 0
+            while g < 3
+            do
+                g = g + 1
+            done
+
+int i = 0
+                        AST SEQ
+                   ┌──────┘ │
+                assign      │
+                │    │      while 
+                i    0      │   │
+                    comparator  block
+                    │           
+                 lessThan       
+                 │      │
+                 g      3
