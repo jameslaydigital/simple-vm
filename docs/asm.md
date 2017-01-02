@@ -1,13 +1,44 @@
 ASSEMBLY DOCUMENTATION
 ======================
 
+####Important:
+Before writing any programs, keep in mind a unique quirk of this machine. Instruction 0 will not be read, so all programs should be prefixed with a noop instruction. This will assemble to an instruction of 0's.
+
 ####Instructions:
-There is allowed only one instruction per line, disregarding labels. Comments
+There is allowed only one instruction per line. Comments
 begin with a semi colon `;`, everything after the semicolon on a line will be
 discarded before parsing.  
 Each instruction is of the form `mnemonic [operands...]`, where each token is
 delimited by one or more space characters. Other than that, whitespace is
 ignored.
+
+####Using the assembler:
+
+    asm input_file [options]
+    
+    OPTIONS
+    -o output_file
+        Writes to `output_file'. Without this argument, the default output file is `a.out'.
+    
+    EXAMPLES
+        asm source.asm              #assembles source.asm and writes output to a.out
+        asm -o new.bin source.asm   #assembles source.asm and writes output to new.bin
+        asm source.asm -o new.bin   #same as above
+
+####Language Syntax:
+This assembly is based on the intel style syntax employed by NASM, MASM, TASM, 
+etc... Only, there are some notable differences. First, the language employs a context free grammar. That is, a register is always a register, a syscall is always a syscall, an label reference is a label reference, regardless of where these symbols appear in the code.
+
+The types are as follows:
+
+- Syscalls: any of the tokens in the syscall table. A syscall is implemented in the virtual hardware and may not be modified by the programmer. Syscalls are generally used to interface with the host machine.
+- Registers: any of the tokens in the register table (see below). Used to simulate the fast access registers in the CPU employed by modern systems.
+- Operations: any of the tokens in the operation table (see below). Operations map one-to-one with a corresponding virtual hardware function.
+- Label References: alphanumeric word beginning with a ".". Labels can be defined *before or after* they are used.
+- Label Definitions: alphanumeric word beginning with a "." and ending with a ":" (e.g. .startLabel5:).
+- Constants: numeric word defining a constant (e.g. 5, 0xf, and 0b1011)
+- Char: a single character, outlined by single quotes (e.g. 'a', or '\0')
+- String: a series of characters, outlined by double quotes (e.g. "Hi there!\0")
 
 ####Registers:
 
@@ -32,7 +63,7 @@ a constant:
 
 ####Constants
 
-Constants can be written in decimal, binary, or hexadecimal:
+32-bit constants can be written in decimal, binary, or hexadecimal:
 
     ; decimal is just a number:
     mov R0 10 ; move decimal 10 to R0
@@ -55,6 +86,11 @@ Offsets are not implemented, but you can get around that using other registers:
     ; instead of mov R0 [R1+8]
     add R1, 8       ; add 8 to R1
     mov R0, [R1] 
+
+Label references are evaluated to 32-bit constants, so you can use them interchangeably:
+
+    ; instead of mov R0, 32
+    mov R0, .data_location
 
 ####Operations
 
@@ -152,15 +188,10 @@ an I/O bus, which has not currently been implemented. I plan on adding `in` and
 
 ####Multitasking
 
-Multitasking is not currently implemented, but I am working out a couple ways
-to introduce this feature gently enough so that people who are using this
-project as a learning resource can make sense of basic multitasking
-functionality.
+Multitasking is not currently implemented, but I am working on a model.
 
 CONCLUSION
 ==========
 
 This basic assembly language should be useful for writing some basic programs
-for the simple-vm. Features to be expected are "labels", "variables", and
-macros that will allow the user to add data constants, such as const strings,
-to the file.
+for the simple-vm. Please post feature requests, questions, and bug-reports to the project's github at https://github.com/jameslaydigital/simple-vm/.
