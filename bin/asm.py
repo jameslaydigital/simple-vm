@@ -29,8 +29,13 @@ class Operation(object):
         self.lineNo = lineNo
 
     def setArguments(self, arguments):
-        self.argTypes = " ".join([arg.type for arg in arguments])
-        print "Trying "+self.name+" "+self.argTypes
+        if len(arguments) == 0:
+            self.argTypes = "None"
+        else:
+            self.argTypes = " ".join([arg.type for arg in arguments])
+        print "Trying: "+self.name+"(\""+self.argTypes+"\") in: "
+        print ops[self.name]
+        print "on line "+str(self.lineNo)
         self.arguments = arguments
         return self.validate()
 
@@ -40,6 +45,7 @@ class Operation(object):
             return True
         else:
             return False
+
     def toString(self):
         return self.name+"("+', '.join([arg.toString() for arg in self.arguments])+")"
     def compile(self, compLen):
@@ -212,19 +218,24 @@ ops = {
         ""  :"\x08\x00"
     },
     "jump" : {
-        "Const" : "\x09\x00\x00\x00"
+        "Const" : "\x09\x00\x00\x00",
+        "Reg" : "\x25\x00\x00\x00"
     },
     "jumpE" : {
-        "Const" : "\x0a\x00\x00\x00"
+        "Const" : "\x0a\x00\x00\x00",
+        "Reg" : "\x26\x00\x00\x00"
     },
     "jumpNE" : {
-        "Const" : "\x0b\x00\x00\x00"
+        "Const" : "\x0b\x00\x00\x00",
+        "Reg" : "\x27\x00\x00\x00"
     },
     "jumpLT" : {
-        "Const" : "\x0c\x00\x00\x00"
+        "Const" : "\x0c\x00\x00\x00",
+        "Reg" : "\x28\x00\x00\x00"
     },
     "jumpGT" : {
-        "Const" : "\x0d\x00\x00\x00"
+        "Const" : "\x0d\x00\x00\x00",
+        "Reg" : "\x29\x00\x00\x00"
     },
     "cmpRegReg" : {
         "Reg Reg" : "\x0e\x00"
@@ -274,6 +285,12 @@ ops = {
         "Reg Reg" : "\x23\x00",
         "Reg Const" : "\x24\x00"
     },
+    "call" : {
+        "Const" : "\x2a\x00\x00\x00"
+    },
+    "ret" : {
+        "None" : "\x2b\x00\x00\x00\x00\x00\x00\x00"
+    },
     "syscall" : {
         "SysCall" : "\x10\x00\x00\x00"
     },
@@ -305,7 +322,8 @@ registers = {
     "R9" : "\x09\x00",
     "R10": "\x0a\x00",
     "BP" : "\x0a\x00",
-    "SP" : "\x0b\x00"
+    "SP" : "\x0b\x00",
+    "IP" : "\x0c\x00"
 }
 
 ################# AST ##########################################
@@ -524,25 +542,26 @@ class AST(object):
                 #Try passing 3, then 2, then 1, then 0. If they all fail,
                 #syntax error.
                 if obj.setArguments(self.stream[i+1:i+4]):
-                    arglen = 3
+                    symbolLen = 4
                 elif obj.setArguments(self.stream[i+1:i+3]):
-                    arglen = 2
+                    symbolLen = 3
                 elif obj.setArguments(self.stream[i+1:i+2]):
-                    arglen = 1
+                    symbolLen = 2
                 elif obj.setArguments([]):
-                    arglen = 0
+                    symbolLen = 1
                 else:
                     acceptable_arguments = "\n\t".join([i for i in ops[obj.name]])
                     err("Incorrect argument pattern for nmemonic \""+obj.name+"\". " +
                         "Acceptable argument patterns are: \n\t"+acceptable_arguments, obj.lineNo)
                     return False
                 self.sequence.append(obj)
-                i+=arglen
+                i+=symbolLen
             elif obj.type == "LabelDef":
-                if i+1 >= len(self.stream) or self.stream[i+1].type != "Operation":
+                if i+1 < len(self.stream) and self.stream[i+1].type != "Operation":
                     err("Label definitions must be followed by an operation", obj.lineNo)
-                self.sequence.append(obj)
-                i+=1
+                else:
+                    self.sequence.append(obj)
+                    i+=1
             else:
                 i+=1
 

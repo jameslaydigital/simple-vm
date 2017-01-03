@@ -10,11 +10,17 @@ If you've already compiled the vm, you can add it to your path and run `vm bytec
 DESCRIPTION
 ===========
 
-Simple 32-bit, little endian virtual machine in which each instruction,
+As much as I tried to keep this project simple, the source code composing the
+vm, assembler, and source code example is over 1,200 lines of code.
+
+The VM is a 32-bit, little-endian virtual machine in which each instruction,
 including both the opcode and operands, is exactly 8 bytes long (64 bits).
 Thus, the instruction pointer can increment by a fixed amount.  
 
-Each operation can take anywhere from 0 to 3 operands, but since the instruction is fixed length, the number of operands an operation can have changes the size of the operands.
+Each operation can take anywhere from 0 to 3 operands, but since the
+instruction is fixed length, the number of operands an operation can have
+changes the size of the operands.
+
 For example:
 
     not R0;         0x19  0x00  0x00  0x00  0x00  0x00  0x00  0x00

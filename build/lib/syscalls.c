@@ -1,4 +1,16 @@
-//==DEBUGGING===========================//
+
+void dumptofile(void) {
+    //THIS IS NOT A SYSCALL
+    //
+    //this routine dumps the entire buffer to a file.
+    //FILE * fopen(const char *restrict filename, const char *restrict mode);
+    //size_t fread(void *restrict ptr, size_t size, size_t nitems, FILE *restrict stream);
+    //size_t fwrite(const void *restrict ptr, size_t size, size_t nitems, FILE *restrict stream);
+    FILE *fp = fopen("dump.bin", "w");
+    fwrite(_buff, sizeof(char), _buff_size, fp);
+    fclose(fp);
+}
+
 void sys_dump(void) {
     printf("\n========SYS DUMP========\n");
     printf("REGISTERS: \n");
@@ -13,6 +25,7 @@ void sys_dump(void) {
     printf("\t       base pointer:\t%#1x\n", _regs[BP]);
     printf(" MEM SIZE: %lu\n", _buff_size);
     printf("========END SYS DUMP====\n\n");
+    dumptofile();
     return;
 }
 

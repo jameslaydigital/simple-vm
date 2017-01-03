@@ -15,6 +15,7 @@ int main(int argc, char *argv[]) {
     loadSysCalls();
     _regs[IP] = INSTRUCTION_BYTE_SIZE*1; //program starts at instruction 0
     _regs[SP] = _buff_size - SIZE_32; //program starts at instruction 0
+    _regs[BP] = _regs[SP]; //initialize base pointer
     if ( executionLoop() > 0 ) fail(ERR_CMD_BUFF);
     return 0;
 }
@@ -83,6 +84,15 @@ void loadFunctionTable() {
 //==DIV=========================//
     _fmap[0x23] = &divRegReg;           //PASS
     _fmap[0x24] = &divRegConst;         //PASS
+//==JUMPREG=====================//
+    _fmap[0x25] = &jumpReg;             //PASS
+    _fmap[0x26] = &jumpEReg;            //PASS
+    _fmap[0x27] = &jumpNEReg;           //PASS
+    _fmap[0x28] = &jumpLTReg;           //PASS
+    _fmap[0x29] = &jumpGTReg;           //PASS
+//==FUNCTIONOPS=================//
+    _fmap[0x2a] = &callOp;              //PASS
+    _fmap[0x2b] = &retOp;               //PASS
 }
 
 int executionLoop() {

@@ -1,14 +1,15 @@
-.start: debug 0 0 0 ;; always required to start the program
-push 20
-push .printme
-syscall print
-pop R1
-push .readme
-syscall read
-syscall print
-syscall exit
-
-;;;; DATA BED SECTION      ;;;;
-;;;; no jumping on the bed ;;;;
-.printme: ds "How old are you? > "
-.readme: ds "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+debug 0 0 0 ;; always required to start the program
+call .testfxn
+call .testfxn
+call .testfxn
+jump .end
+.testfxn: push BP
+    mov BP SP
+        push 10
+        push .msg
+        syscall print
+    mov SP BP
+    pop BP
+    ret
+.end: syscall exit
+.msg: ds "hi there!!"

@@ -121,7 +121,68 @@ void jumpGT(unsigned short NA,unsigned short LSB,unsigned short MSB) {
     if (_regs[CMP] == CMP_G ) jump(NA,LSB,MSB);
 }
 
-void syscallOp(unsigned short NA,unsigned short LSB,unsigned short MSB) {
+void jumpReg(unsigned short r,unsigned short NA,unsigned short NB) {
+    if ( r < MAX_REG_INDEX ) {
+        unsigned int loc = _regs[r];
+        if ( loc % INSTRUCTION_BYTE_SIZE != 0 ) {
+            printf("WARN: jumping to middle of instruction (byte %#1x). Prepare for confusing shit.", loc);
+        }
+        _regs[IP] = loc-INSTRUCTION_BYTE_SIZE;
+    } else printf("ERR: jumpReg: %s: %#1x.\n",fnote,r);
+}
+void jumpEReg(unsigned short r,unsigned short NA,unsigned short NB) {
+    if (_regs[CMP] == CMP_EQ ) jumpReg(r,NA,NB);
+}
+void jumpNEReg(unsigned short r,unsigned short NA,unsigned short NB) {
+    if (_regs[CMP] != CMP_EQ ) jumpReg(r,NA,NB);
+}
+void jumpLTReg(unsigned short r,unsigned short NA,unsigned short NB) {
+    if (_regs[CMP] == CMP_L ) jumpReg(r,NA,NB);
+}
+void jumpGTReg(unsigned short r,unsigned short NA,unsigned short NB) {
+    if (_regs[CMP] == CMP_G ) jumpReg(r,NA,NB);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                             //
+//  :    :                                                                                     //
+//  |  2 | [ebp + 16] (3rd function argument)                                                  //
+//  |  5 | [ebp + 12] (2nd argument)                                                           //
+//  | 10 | [ebp + 8]  (1st argument)                                                           //
+//  | RA | [ebp + 4]  (return address)                                                         //
+//  | FP | [ebp]      (old ebp value)                                                          //
+//  |    | [ebp - 4]  (1st local variable)                                                     //
+//  :    :                                                                                     //
+//  :    :                                                                                     //
+//  |    | [ebp - X]  (esp - the current stack pointer. The use of push / pop is valid now)    //
+//                                                                                             //
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+void callOp(unsigned short NA,unsigned short LSB,unsigned short MSB) {
+    unsigned int returnAddress = _regs[IP]+INSTRUCTION_BYTE_SIZE;
+    //push IP+(2 instructions)
+    unsigned short plsb = (unsigned short)(returnAddress & 0xff);
+    unsigned short pmsb = (unsigned short)((returnAddress>>8) & 0xff);
+    pushConst(NA,plsb,pmsb);
+    //jump to call location
+    jump(NA,LSB,MSB);
+}
+
+void retOp(unsigned short NA,unsigned short NB,unsigned short NC) {
+    //move the instruction pointer back to whatever is currently on the stack
+    unsigned int returnAddressOffset = _regs[BP] - SIZE_32;
+    unsigned int returnAddress = bytesToUInt(_buff+returnAddressOffset);
+    unsigned short raLSB = returnAddress & 0xff;
+    unsigned short raMSB = (returnAddress>>8) & 0xff;
+    //this is your jump: popping the return address into IP. This also undoes
+    //the push initiated by "callOp".
+    //popReg((unsigned short)IP,0,0);
+    _regs[IP] = (bytesToUInt(_buff+_regs[SP]) - INSTRUCTION_BYTE_SIZE);
+    //restore RA to IP, and subtract an instruction because it will be
+    //auto-incremented when this operation completes.
+    _regs[SP] += SIZE_32; //pop undoes the push that callOp does to store RA.
+}
+void syscallOp(unsigned short r,unsigned short LSB,unsigned short MSB) {
     unsigned int routine_vector = toUInt32(LSB,MSB);
     _syscalls[routine_vector]();
 }

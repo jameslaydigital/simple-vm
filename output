@@ -1,0 +1,526 @@
+ATTEMPT # 0
+____________________________________________
+
+calling. or trying to.
+call: return address to push: 0x10
+call: return address comps: 0x10 0
+call: SP 0x43e
+
+========SYS DUMP========
+REGISTERS: 
+	R0:		0
+	R1:		0
+	R2:		0
+	R3:		0
+	R4:		0
+	R5:		0
+	R6:		0
+	R7:		0
+	R8:		0
+	R9:		0
+	R10:		0x43e
+	R11:		0x43a
+	CMP:		0
+	instruction pointer:	0x28
+	      stack pointer:	0x43a
+	       base pointer:	0x43e
+ MEM SIZE: 1090
+========END SYS DUMP====
+
+ret: SP 0x43a
+ret: BP 0x43e
+ret: returnAddressOffset 0x43a
+ret: returnAddress 0x10
+ret(0x10, 0)
+
+ATTEMPT # 1
+____________________________________________
+
+calling. or trying to.
+call: return address to push: 0x18
+call: return address comps: 0x18 0
+call: SP 0x43a
+
+
+
+
+========SYS DUMP========
+REGISTERS: 
+	R0:		0
+	R1:		0
+	R2:		0
+	R3:		0
+	R4:		0
+	R5:		0
+	R6:		0
+	R7:		0
+	R8:		0
+	R9:		0
+	R10:		0x43e
+	R11:		0x436
+	CMP:		0
+	instruction pointer:	0x28
+	      stack pointer:	0x436
+	       base pointer:	0x43e
+ MEM SIZE: 1090
+========END SYS DUMP====
+
+ret: SP 0x436
+ret: BP 0x43e
+ret: returnAddressOffset 0x43a
+ret: returnAddress 0x10
+ret(0x10, 0)
+
+ATTEMPT # 2
+____________________________________________
+
+calling. or trying to.
+call: return address to push: 0x18
+call: return address comps: 0x18 0
+call: SP 0x436
+
+========SYS DUMP========
+REGISTERS: 
+	R0:		0
+	R1:		0
+	R2:		0
+	R3:		0
+	R4:		0
+	R5:		0
+	R6:		0
+	R7:		0
+	R8:		0
+	R9:		0
+	R10:		0x43e
+	R11:		0x432
+	CMP:		0
+	instruction pointer:	0x28
+	      stack pointer:	0x432
+	       base pointer:	0x43e
+ MEM SIZE: 1090
+========END SYS DUMP====
+
+ret: SP 0x432
+ret: BP 0x43e
+ret: returnAddressOffset 0x43a
+ret: returnAddress 0x10
+ret(0x10, 0)
+
+ATTEMPT # 3
+____________________________________________
+
+calling. or trying to.
+call: return address to push: 0x18
+call: return address comps: 0x18 0
+call: SP 0x432
+
+========SYS DUMP========
+REGISTERS: 
+	R0:		0
+	R1:		0
+	R2:		0
+	R3:		0
+	R4:		0
+	R5:		0
+	R6:		0
+	R7:		0
+	R8:		0
+	R9:		0
+	R10:		0x43e
+	R11:		0x42e
+	CMP:		0
+	instruction pointer:	0x28
+	      stack pointer:	0x42e
+	       base pointer:	0x43e
+ MEM SIZE: 1090
+========END SYS DUMP====
+
+ret: SP 0x42e
+ret: BP 0x43e
+ret: returnAddressOffset 0x43a
+ret: returnAddress 0x10
+ret(0x10, 0)
+
+ATTEMPT # 4
+____________________________________________
+
+calling. or trying to.
+call: return address to push: 0x18
+call: return address comps: 0x18 0
+call: SP 0x42e
+
+========SYS DUMP========
+REGISTERS: 
+	R0:		0
+	R1:		0
+	R2:		0
+	R3:		0
+	R4:		0
+	R5:		0
+	R6:		0
+	R7:		0
+	R8:		0
+	R9:		0
+	R10:		0x43e
+	R11:		0x42a
+	CMP:		0
+	instruction pointer:	0x28
+	      stack pointer:	0x42a
+	       base pointer:	0x43e
+ MEM SIZE: 1090
+========END SYS DUMP====
+
+ret: SP 0x42a
+ret: BP 0x43e
+ret: returnAddressOffset 0x43a
+ret: returnAddress 0x10
+ret(0x10, 0)
+
+ATTEMPT # 5
+____________________________________________
+
+calling. or trying to.
+call: return address to push: 0x18
+call: return address comps: 0x18 0
+call: SP 0x42a
+
+========SYS DUMP========
+REGISTERS: 
+	R0:		0
+	R1:		0
+	R2:		0
+	R3:		0
+	R4:		0
+	R5:		0
+	R6:		0
+	R7:		0
+	R8:		0
+	R9:		0
+	R10:		0x43e
+	R11:		0x426
+	CMP:		0
+	instruction pointer:	0x28
+	      stack pointer:	0x426
+	       base pointer:	0x43e
+ MEM SIZE: 1090
+========END SYS DUMP====
+
+ret: SP 0x426
+ret: BP 0x43e
+ret: returnAddressOffset 0x43a
+ret: returnAddress 0x10
+ret(0x10, 0)
+calling. or trying to.
+call: return address to push: 0x18
+call: return address comps: 0x18 0
+call: SP 0x426
+
+========SYS DUMP========
+REGISTERS: 
+	R0:		0
+	R1:		0
+	R2:		0
+	R3:		0
+	R4:		0
+	R5:		0
+	R6:		0
+	R7:		0
+	R8:		0
+	R9:		0
+	R10:		0x43e
+	R11:		0x422
+	CMP:		0
+	instruction pointer:	0x28
+	      stack pointer:	0x422
+	       base pointer:	0x43e
+ MEM SIZE: 1090
+========END SYS DUMP====
+
+ret: SP 0x422
+ret: BP 0x43e
+ret: returnAddressOffset 0x43a
+ret: returnAddress 0x10
+ret(0x10, 0)
+calling. or trying to.
+call: return address to push: 0x18
+call: return address comps: 0x18 0
+call: SP 0x422
+
+========SYS DUMP========
+REGISTERS: 
+	R0:		0
+	R1:		0
+	R2:		0
+	R3:		0
+	R4:		0
+	R5:		0
+	R6:		0
+	R7:		0
+	R8:		0
+	R9:		0
+	R10:		0x43e
+	R11:		0x41e
+	CMP:		0
+	instruction pointer:	0x28
+	      stack pointer:	0x41e
+	       base pointer:	0x43e
+ MEM SIZE: 1090
+========END SYS DUMP====
+
+ret: SP 0x41e
+ret: BP 0x43e
+ret: returnAddressOffset 0x43a
+ret: returnAddress 0x10
+ret(0x10, 0)
+calling. or trying to.
+call: return address to push: 0x18
+call: return address comps: 0x18 0
+call: SP 0x41e
+
+========SYS DUMP========
+REGISTERS: 
+	R0:		0
+	R1:		0
+	R2:		0
+	R3:		0
+	R4:		0
+	R5:		0
+	R6:		0
+	R7:		0
+	R8:		0
+	R9:		0
+	R10:		0x43e
+	R11:		0x41a
+	CMP:		0
+	instruction pointer:	0x28
+	      stack pointer:	0x41a
+	       base pointer:	0x43e
+ MEM SIZE: 1090
+========END SYS DUMP====
+
+ret: SP 0x41a
+ret: BP 0x43e
+ret: returnAddressOffset 0x43a
+ret: returnAddress 0x10
+ret(0x10, 0)
+calling. or trying to.
+call: return address to push: 0x18
+call: return address comps: 0x18 0
+call: SP 0x41a
+
+========SYS DUMP========
+REGISTERS: 
+	R0:		0
+	R1:		0
+	R2:		0
+	R3:		0
+	R4:		0
+	R5:		0
+	R6:		0
+	R7:		0
+	R8:		0
+	R9:		0
+	R10:		0x43e
+	R11:		0x416
+	CMP:		0
+	instruction pointer:	0x28
+	      stack pointer:	0x416
+	       base pointer:	0x43e
+ MEM SIZE: 1090
+========END SYS DUMP====
+
+ret: SP 0x416
+ret: BP 0x43e
+ret: returnAddressOffset 0x43a
+ret: returnAddress 0x10
+ret(0x10, 0)
+calling. or trying to.
+call: return address to push: 0x18
+call: return address comps: 0x18 0
+call: SP 0x416
+
+========SYS DUMP========
+REGISTERS: 
+	R0:		0
+	R1:		0
+	R2:		0
+	R3:		0
+	R4:		0
+	R5:		0
+	R6:		0
+	R7:		0
+	R8:		0
+	R9:		0
+	R10:		0x43e
+	R11:		0x412
+	CMP:		0
+	instruction pointer:	0x28
+	      stack pointer:	0x412
+	       base pointer:	0x43e
+ MEM SIZE: 1090
+========END SYS DUMP====
+
+ret: SP 0x412
+ret: BP 0x43e
+ret: returnAddressOffset 0x43a
+ret: returnAddress 0x10
+ret(0x10, 0)
+calling. or trying to.
+call: return address to push: 0x18
+call: return address comps: 0x18 0
+call: SP 0x412
+
+========SYS DUMP========
+REGISTERS: 
+	R0:		0
+	R1:		0
+	R2:		0
+	R3:		0
+	R4:		0
+	R5:		0
+	R6:		0
+	R7:		0
+	R8:		0
+	R9:		0
+	R10:		0x43e
+	R11:		0x40e
+	CMP:		0
+	instruction pointer:	0x28
+	      stack pointer:	0x40e
+	       base pointer:	0x43e
+ MEM SIZE: 1090
+========END SYS DUMP====
+
+ret: SP 0x40e
+ret: BP 0x43e
+ret: returnAddressOffset 0x43a
+ret: returnAddress 0x10
+ret(0x10, 0)
+calling. or trying to.
+call: return address to push: 0x18
+call: return address comps: 0x18 0
+call: SP 0x40e
+
+========SYS DUMP========
+REGISTERS: 
+	R0:		0
+	R1:		0
+	R2:		0
+	R3:		0
+	R4:		0
+	R5:		0
+	R6:		0
+	R7:		0
+	R8:		0
+	R9:		0
+	R10:		0x43e
+	R11:		0x40a
+	CMP:		0
+	instruction pointer:	0x28
+	      stack pointer:	0x40a
+	       base pointer:	0x43e
+ MEM SIZE: 1090
+========END SYS DUMP====
+
+ret: SP 0x40a
+ret: BP 0x43e
+ret: returnAddressOffset 0x43a
+ret: returnAddress 0x10
+ret(0x10, 0)
+calling. or trying to.
+call: return address to push: 0x18
+call: return address comps: 0x18 0
+call: SP 0x40a
+
+========SYS DUMP========
+REGISTERS: 
+	R0:		0
+	R1:		0
+	R2:		0
+	R3:		0
+	R4:		0
+	R5:		0
+	R6:		0
+	R7:		0
+	R8:		0
+	R9:		0
+	R10:		0x43e
+	R11:		0x406
+	CMP:		0
+	instruction pointer:	0x28
+	      stack pointer:	0x406
+	       base pointer:	0x43e
+ MEM SIZE: 1090
+========END SYS DUMP====
+
+ret: SP 0x406
+ret: BP 0x43e
+ret: returnAddressOffset 0x43a
+ret: returnAddress 0x10
+ret(0x10, 0)
+calling. or trying to.
+call: return address to push: 0x18
+call: return address comps: 0x18 0
+call: SP 0x406
+
+========SYS DUMP========
+REGISTERS: 
+	R0:		0
+	R1:		0
+	R2:		0
+	R3:		0
+	R4:		0
+	R5:		0
+	R6:		0
+	R7:		0
+	R8:		0
+	R9:		0
+	R10:		0x43e
+	R11:		0x402
+	CMP:		0
+	instruction pointer:	0x28
+	      stack pointer:	0x402
+	       base pointer:	0x43e
+ MEM SIZE: 1090
+========END SYS DUMP====
+
+ret: SP 0x402
+ret: BP 0x43e
+ret: returnAddressOffset 0x43a
+ret: returnAddress 0x10
+ret(0x10, 0)
+calling. or trying to.
+call: return address to push: 0x18
+call: return address comps: 0x18 0
+call: SP 0x402
+
+========SYS DUMP========
+REGISTERS: 
+	R0:		0
+	R1:		0
+	R2:		0
+	R3:		0
+	R4:		0
+	R5:		0
+	R6:		0
+	R7:		0
+	R8:		0
+	R9:		0
+	R10:		0x43e
+	R11:		0x3fe
+	CMP:		0
+	instruction pointer:	0x28
+	      stack pointer:	0x3fe
+	       base pointer:	0x43e
+ MEM SIZE: 1090
+========END SYS DUMP====
+
+ret: SP 0x3fe
+ret: BP 0x43e
+ret: returnAddressOffset 0x43a
+ret: returnAddress 0x10
+ret(0x10, 0)
+calling. or trying to.
+call: return address to push: 0x18
+call: return address comps: 0x18 0
+call: SP 0x3fe
