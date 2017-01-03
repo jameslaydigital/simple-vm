@@ -2,7 +2,9 @@ ASSEMBLY DOCUMENTATION
 ======================
 
 ####Important:
-Before writing any programs, keep in mind a unique quirk of this machine. Instruction 0 will not be read, so all programs should be prefixed with a noop instruction. This will assemble to an instruction of 0's.
+Before writing any programs, keep in mind a unique quirk of this machine.
+Instruction 0 will not be read, so all programs should be prefixed with a noop
+instruction. This will assemble to an instruction of 0's.
 
 ####Instructions:
 There is allowed only one instruction per line. Comments
@@ -26,19 +28,29 @@ ignored.
         asm source.asm -o new.bin   #same as above
 
 ####Language Syntax:
-This assembly is based on the intel style syntax employed by NASM, MASM, TASM, 
-etc... Only, there are some notable differences. First, the language employs a context free grammar. That is, a register is always a register, a syscall is always a syscall, an label reference is a label reference, regardless of where these symbols appear in the code.
+This assembly is based on the intel style syntax employed by NASM, MASM, TASM,
+etc... Only, there are some notable differences. First, the language employs a
+context free grammar. That is, a register is always a register, a syscall is
+always a syscall, an label reference is a label reference, regardless of where
+these symbols appear in the code.
 
 The types are as follows:
 
-- Syscalls: any of the tokens in the syscall table. A syscall is implemented in the virtual hardware and may not be modified by the programmer. Syscalls are generally used to interface with the host machine.
-- Registers: any of the tokens in the register table (see below). Used to simulate the fast access registers in the CPU employed by modern systems.
-- Operations: any of the tokens in the operation table (see below). Operations map one-to-one with a corresponding virtual hardware function.
-- Label References: alphanumeric word beginning with a ".". Labels can be defined *before or after* they are used.
-- Label Definitions: alphanumeric word beginning with a "." and ending with a ":" (e.g. .startLabel5:).
+- Syscalls: any of the tokens in the syscall table. A syscall is implemented in
+  the virtual hardware and may not be modified by the programmer. Syscalls are
+  generally used to interface with the host machine.
+- Registers: any of the tokens in the register table (see below). Used to
+  simulate the fast access registers in the CPU employed by modern systems.
+- Operations: any of the tokens in the operation table (see below). Operations
+  map one-to-one with a corresponding virtual hardware function.
+- Label References: alphanumeric word beginning with a ".". Labels can be
+  defined *before or after* they are used.
+- Label Definitions: alphanumeric word beginning with a "." and ending with a
+  ":" (e.g. .startLabel5:).
 - Constants: numeric word defining a constant (e.g. 5, 0xf, and 0b1011)
 - Char: a single character, outlined by single quotes (e.g. 'a', or '\0')
-- String: a series of characters, outlined by double quotes (e.g. "Hi there!\0")
+- String: a series of characters, outlined by double quotes (e.g. "Hi
+  there!\0")
 
 ####Registers:
 
@@ -87,7 +99,8 @@ Offsets are not implemented, but you can get around that using other registers:
     add R1, 8       ; add 8 to R1
     mov R0, [R1] 
 
-Label references are evaluated to 32-bit constants, so you can use them interchangeably:
+Label references are evaluated to 32-bit constants, so you can use them
+interchangeably:
 
     ; instead of mov R0, 32
     mov R0, .data_location
@@ -194,4 +207,5 @@ CONCLUSION
 ==========
 
 This basic assembly language should be useful for writing some basic programs
-for the simple-vm. Please post feature requests, questions, and bug-reports to the project's github at https://github.com/jameslaydigital/simple-vm/.
+for the simple-vm. Please post feature requests, questions, and bug-reports to
+the project's github at https://github.com/jameslaydigital/simple-vm/.
